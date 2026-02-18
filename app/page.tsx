@@ -34,7 +34,6 @@ export default async function Home() {
         {/* Title and subtitle */}
         <div className="text-center space-y-2 mt-4">
           <h1 className="text-3xl font-bold">Login with Google</h1>
-          <p className="text-gray-500 text-sm">Add Google login to your v0 app in minutes</p>
         </div>
 
         {/* Main content: welcome message or login button */}
