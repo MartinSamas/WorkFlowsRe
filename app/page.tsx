@@ -1,6 +1,5 @@
 import { WelcomeMessage } from "@/components/welcome-message"
 import { LoginButton } from "@/components/login-button"
-import { SetupInstructionsWrapper } from "@/components/setup-instructions-wrapper"
 import { getCurrentUser } from "@/lib/actions"
 import Link from "next/link"
 
@@ -40,28 +39,6 @@ export default async function Home() {
 
         {/* Main content: welcome message or login button */}
         <div className="w-full mt-8">{user ? <WelcomeMessage user={user} /> : <LoginButton />}</div>
-
-        {/* Gray line separator */}
-        <div className="w-full border-t border-gray-200 my-8"></div>
-
-        {/* Setup Instructions */}
-        <SetupInstructionsWrapper />
-
-        {/* Footer links */}
-        <div className="pb-12 my-6 text-xs text-gray-400">
-          Forked by{" "}
-          <Link href="https://x.com/jacobmparis" target="_blank" className="hover:text-gray-600">
-            @jacobmparis
-          </Link>{" "}
-          from{" "}
-          <Link href="https://x.com/rauchg/status/1912327417454293083" target="_blank" className="hover:text-gray-600">
-            @EstebanSuarez
-          </Link>{" "}
-          on{" "}
-          <Link href="https://v0.dev" target="_blank" className="hover:text-gray-600">
-            v0.dev
-          </Link>
-        </div>
       </div>
     </main>
   )
