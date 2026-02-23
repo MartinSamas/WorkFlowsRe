@@ -116,5 +116,3 @@ backend/
    DATABASE_TYPE=postgresql
    DATABASE_URL=postgresql://user:password@localhost:5432/workflows
    ```
-
-That's it — the rest of the application uses `DatabaseAdapter` and doesn't need to change.

@@ -7,7 +7,12 @@ const DATABASE_URL = process.env.DATABASE_URL || path.join(process.cwd(), 'backe
 
 function createDatabaseAdapter(): DatabaseAdapter {
   if (DATABASE_TYPE === 'sqlite') {
-    return new SQLiteAdapter(DATABASE_URL);
+    const adapter = new SQLiteAdapter(DATABASE_URL);
+
+    adapter.initialize().catch(err => {
+      console.error('Failed to initialize database:', err);
+    });
+    return adapter;
   }
   throw new Error(`Unsupported database type: ${DATABASE_TYPE}. Implement a new adapter and add it here.`);
 }

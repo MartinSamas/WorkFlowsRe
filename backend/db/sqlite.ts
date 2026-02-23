@@ -89,9 +89,14 @@ export class SQLiteAdapter implements DatabaseAdapter {
   }
 
   async initialize(): Promise<void> {
-    const schemaPath = join(__dirname, 'schema.sql');
-    const schema = readFileSync(schemaPath, 'utf-8');
-    this.db.exec(schema);
+    const schemaPath = join(process.cwd(), 'backend', 'db', 'schema.sql');
+    try {
+      const schema = readFileSync(schemaPath, 'utf-8');
+      this.db.exec(schema);
+    } catch (error) {
+      console.error('Failed to read schema file:', error);
+      throw error;
+    }
   }
 
   async close(): Promise<void> {
