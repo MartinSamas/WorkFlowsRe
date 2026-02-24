@@ -1,10 +1,13 @@
-import { WelcomeMessage } from "@/components/welcome-message"
 import { LoginButton } from "@/components/login-button"
 import { getCurrentUser } from "@/lib/actions"
-import Link from "next/link"
+import { redirect } from "next/navigation"
 
 export default async function Home() {
   const user = await getCurrentUser()
+
+  if (user) {
+    redirect("/requests")
+  }
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center">
@@ -36,8 +39,10 @@ export default async function Home() {
           <h1 className="text-3xl font-bold">Login with Google</h1>
         </div>
 
-        {/* Main content: welcome message or login button */}
-        <div className="w-full mt-8">{user ? <WelcomeMessage user={user} /> : <LoginButton />}</div>
+        {/* Login button */}
+        <div className="w-full mt-8">
+          <LoginButton />
+        </div>
       </div>
     </main>
   )
