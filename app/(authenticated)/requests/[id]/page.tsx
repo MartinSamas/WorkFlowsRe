@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { StatusBadge } from '@/components/status-badge';
-import { ApprovalList } from '@/components/approval-list';
+import { ApprovalStatusList } from '@/components/approval-status-list';
 import { Button } from '@/components/ui/button';
 import { formatDate, formatDateRange, countDays, relativeTime } from '@/lib/date-utils';
 import type { RequestWithApprovals } from '@/app/api/types';
@@ -151,7 +151,7 @@ export default function RequestDetailPage({ params }: { params: { id: string } }
       {/* Approvals */}
       <div className="rounded-lg border bg-card p-6 space-y-4">
         <h2 className="font-semibold">Approvals</h2>
-        <ApprovalList approvals={request.approvals} />
+        <ApprovalStatusList approvals={request.approvals} />
       </div>
 
       {/* Actions */}
