@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { RequestCard } from '@/components/request-card';
+import { RequestRow } from '@/components/request-row';
 import type { RequestWithApprovals } from '@/app/api/types';
 
 export default function RequestsPage() {
@@ -50,14 +50,42 @@ export default function RequestsPage() {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {requests.map((request) => (
-            <RequestCard
-              key={request.id}
-              request={request}
-              onClick={() => router.push(`/requests/${request.id}`)}
-            />
-          ))}
+        <div className="rounded-lg border overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead className="border-b bg-muted/50">
+                <tr>
+                  <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    Dates
+                  </th>
+                  <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    Type
+                  </th>
+                  <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider text-center">
+                    Days
+                  </th>
+                  <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    Notes
+                  </th>
+                  <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    Created
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {requests.map((request) => (
+                  <RequestRow
+                    key={request.id}
+                    request={request}
+                    onClick={() => router.push(`/requests/${request.id}`)}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>

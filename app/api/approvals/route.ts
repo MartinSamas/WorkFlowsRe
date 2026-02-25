@@ -27,7 +27,10 @@ export async function GET() {
       )
     ).filter((r): r is RequestWithApprovals => r !== null);
 
-    return NextResponse.json({ data: requestsWithApprovals });
+    return NextResponse.json({
+      data: requestsWithApprovals,
+      meta: { currentUserEmail: user.email },
+    });
   } catch (error) {
     return handleError(error, 'GET /api/approvals');
   }
