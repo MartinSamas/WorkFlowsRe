@@ -3,8 +3,6 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  serverExternalPackages: ['better-sqlite3'],
-  turbopack: {},
   images: {
     remotePatterns: [
       {
