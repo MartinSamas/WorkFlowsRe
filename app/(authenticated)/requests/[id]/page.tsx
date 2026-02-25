@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -15,9 +16,10 @@ export default function RequestDetailPage({ params }: { params: { id: string } }
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [cancelling, setCancelling] = useState(false);
+  const { id } = React.use(params);
 
   useEffect(() => {
-    fetch(`/api/requests/${params.id}`)
+    fetch(`/api/requests/${id}`)
       .then(async (res) => {
         if (!res.ok) {
           const json = await res.json().catch(() => ({}));
@@ -28,7 +30,7 @@ export default function RequestDetailPage({ params }: { params: { id: string } }
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, [params.id]);
+  }, [id]);
 
   async function handleCancel() {
     if (!request) return;

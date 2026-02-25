@@ -19,7 +19,7 @@ export function LoginButton() {
         window.location.reload()
       }
 
-      if (event.data.startsWith("AUTH_ERROR")) {
+      if (typeof event.data === "string" && event.data.startsWith("AUTH_ERROR")) {
         setIsLoading(false)
 
         // Extract the specific error code if it exists

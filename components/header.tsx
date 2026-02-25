@@ -17,7 +17,7 @@ export async function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
       <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-        <span className="font-semibold text-sm">Holiday Requests</span>
+        <span className="font-semibold text-sm">WorkFlows</span>
 
         <div className="flex items-center gap-3">
           {/* Profile picture */}

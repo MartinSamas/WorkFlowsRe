@@ -34,12 +34,10 @@ export default async function Home() {
           </svg>
         </div>
 
-        {/* Title and subtitle */}
         <div className="text-center space-y-2 mt-4">
           <h1 className="text-3xl font-bold">Login with Google</h1>
         </div>
 
-        {/* Login button */}
         <div className="w-full mt-8">
           <LoginButton />
         </div>
