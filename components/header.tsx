@@ -10,25 +10,10 @@ export async function Header() {
 
   if (!user) return null;
 
-  const initials = user.name
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
-
   let pendingApprovalsCount = 0;
   try {
     const approvals = await db.getApprovalsByApprover(user.email);
-    const pendingChecks = await Promise.all(
-      approvals
-        .filter((a) => a.status === 'pending')
-        .map(async (a) => {
-          const req = await db.getRequestById(a.request_id);
-          return req?.status === 'pending';
-        }),
-    );
-    pendingApprovalsCount = pendingChecks.filter(Boolean).length;
+    pendingApprovalsCount = approvals.filter((a) => a.status === 'pending').length;
   } catch {
     // ignore errors; count stays 0
   }
@@ -56,7 +41,13 @@ export async function Header() {
                 sizes="32px"
               />
             ) : (
-              <span className="text-xs font-medium text-gray-600">{initials}</span>
+              <span className="text-xs font-medium text-gray-600">{
+                user.name
+                  .split(' ')
+                  .map((n) => n[0])
+                  .join('')
+                  .slice(0, 2)
+                  .toUpperCase()}</span>
             )}
           </div>
 

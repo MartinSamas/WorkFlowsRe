@@ -14,11 +14,12 @@ interface RequestRowProps {
   };
   onClick: () => void;
   showActions?: boolean;
+  hideRequestedBy?: boolean;
   onApprove?: () => void;
   onDeny?: () => void;
 }
 
-export function RequestRow({ request, onClick, showActions, onApprove, onDeny }: RequestRowProps) {
+export function RequestRow({ request, onClick, showActions, hideRequestedBy, onApprove, onDeny }: RequestRowProps) {
   const days = countDays(request.start_date, request.end_date);
   const dateRange = formatDateRange(request.start_date, request.end_date);
   const notesPreview = request.notes ? request.notes.slice(0, 60) : null;
@@ -39,6 +40,11 @@ export function RequestRow({ request, onClick, showActions, onApprove, onDeny }:
       <td className="px-4 py-3">
         <StatusBadge status={request.status} />
       </td>
+      {!hideRequestedBy && (
+        <td className="px-4 py-3 text-sm whitespace-nowrap">
+          {request.user_name || <span className="italic text-muted-foreground">—</span>}
+        </td>
+      )}
       <td className="px-4 py-3 text-sm whitespace-nowrap">{dateRange}</td>
       <td className="px-4 py-3 text-sm capitalize">{request.request_type.replace(/_/g, ' ')}</td>
       <td className="px-4 py-3 text-sm text-center">{days}</td>

@@ -34,7 +34,10 @@ export default function ApprovalsPage() {
   async function loadApprovals() {
     try {
       const res = await fetch('/api/approvals');
-      if (!res.ok) throw new Error('Failed to load approvals');
+      if (!res.ok) {
+        setError('Failed to load approvals');
+        return;
+      }
       const json: ApprovalsResponse = await res.json();
       setRequests(json.data ?? []);
       setCurrentUserEmail(json.meta?.currentUserEmail ?? '');
@@ -46,7 +49,7 @@ export default function ApprovalsPage() {
   }
 
   useEffect(() => {
-    loadApprovals();
+    void loadApprovals();
   }, []);
 
   function openDialog(request: RequestWithApprovals, action: 'approve' | 'deny') {
@@ -75,6 +78,7 @@ export default function ApprovalsPage() {
     setTimeout(() => setSuccessMessage(null), 3000);
     setLoading(true);
     await loadApprovals();
+    router.refresh();
   }
 
   if (loading) {
@@ -122,7 +126,7 @@ export default function ApprovalsPage() {
                         Status
                       </th>
                       <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                        Requester
+                        Requested by
                       </th>
                       <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                         Dates
@@ -157,13 +161,6 @@ export default function ApprovalsPage() {
                   </tbody>
                 </table>
               </div>
-
-              {/* Requester info row */}
-              {request.user_name && (
-                <div className="px-4 py-2 bg-muted/30 border-t text-xs text-muted-foreground">
-                  Requested by <span className="font-medium text-foreground">{request.user_name}</span>
-                </div>
-              )}
 
               {/* Expandable approvers section */}
               <div className="border-t">

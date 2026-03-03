@@ -15,12 +15,6 @@ interface ApprovalStatusListProps {
   currentUserEmail?: string;
 }
 
-const statusIcon: Record<Approval['status'], string> = {
-  approved: '✅',
-  denied: '❌',
-  pending: '⏳',
-};
-
 const statusColor: Record<Approval['status'], string> = {
   approved: 'text-green-700',
   denied: 'text-red-700',
@@ -43,9 +37,6 @@ export function ApprovalStatusList({ approvals, currentUserEmail }: ApprovalStat
               isCurrentUser ? 'bg-primary/5 border-primary/20' : 'bg-card'
             }`}
           >
-            <span className="text-base leading-none mt-0.5" aria-hidden="true">
-              {statusIcon[approval.status]}
-            </span>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className={`font-medium text-sm ${isCurrentUser ? 'font-bold' : ''}`}>

@@ -80,6 +80,7 @@ export default function RequestsPage() {
                   <RequestRow
                     key={request.id}
                     request={request}
+                    hideRequestedBy
                     onClick={() => router.push(`/requests/${request.id}`)}
                   />
                 ))}
