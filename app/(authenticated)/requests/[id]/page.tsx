@@ -1,7 +1,6 @@
 'use client';
 
-import React from 'react';
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState} from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { StatusBadge } from '@/components/status-badge';
@@ -10,13 +9,13 @@ import { Button } from '@/components/ui/button';
 import { formatDate, formatDateRange, countDays, relativeTime } from '@/lib/date-utils';
 import type { RequestWithApprovals } from '@/app/api/types';
 
-export default function RequestDetailPage({ params }: { params: { id: string } }) {
+export default function RequestDetailPage({ params }: { params: Promise<{ id: string }>}) {
   const router = useRouter();
   const [request, setRequest] = useState<RequestWithApprovals | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [cancelling, setCancelling] = useState(false);
-  const { id } = React.use(params);
+  const { id } = use(params);
 
   useEffect(() => {
     fetch(`/api/requests/${id}`)
@@ -43,7 +42,8 @@ export default function RequestDetailPage({ params }: { params: { id: string } }
       });
       if (!res.ok) {
         const json = await res.json().catch(() => ({}));
-        throw new Error(json.error ?? 'Failed to cancel request');
+        setError(json.error ?? 'Failed to cancel request');
+        return;
       }
       const json = await res.json();
       setRequest(json.data);

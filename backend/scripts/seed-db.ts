@@ -67,16 +67,16 @@ async function seedDatabase() {
                 request_type: 'vacation',
                 status: 'pending' as const,
                 notes: 'Summer vacation planning',
-                approvers: [approvers[1], approvers[2], approvers[3]]
+                approvers: [approvers[2], approvers[4]]
             },
             {
                 user: users[2],
                 start_date: new Date('2026-03-01'),
                 end_date: new Date('2026-03-03'),
                 request_type: 'personal',
-                status: 'cancelled' as const,
+                status: 'pending' as const,
                 notes: 'Personal matters - cancelled due to project deadline',
-                approvers: [approvers[0], approvers[4]]
+                approvers: [approvers[4]]
             },
             {
                 user: users[0],

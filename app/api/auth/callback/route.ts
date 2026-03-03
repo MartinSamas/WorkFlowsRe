@@ -13,14 +13,17 @@ export async function GET(request: NextRequest) {
     const error = searchParams.get("error")
     const errorDescription = searchParams.get("error_description")
 
+    // Get the cookies store
+    const cookieStore = await cookies()
+
     // Log all parameters for debugging
     console.log("OAuth Callback Parameters:", {
       code: code ? "present" : "missing",
       state: state ? "present" : "missing",
       error,
       errorDescription,
-      savedState: cookies().get("oauth_state")?.value ? "present" : "missing",
-      codeVerifier: cookies().get("code_verifier")?.value ? "present" : "missing",
+      savedState: cookieStore.get("oauth_state")?.value ? "present" : "missing",
+      codeVerifier: cookieStore.get("code_verifier")?.value ? "present" : "missing",
     })
 
     // Check if the user denied the authorization
@@ -30,8 +33,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Verify the state to prevent CSRF attacks
-    const savedState = cookies().get("oauth_state")?.value
-    const codeVerifier = cookies().get("code_verifier")?.value
+    const savedState = cookieStore.get("oauth_state")?.value
+    const codeVerifier = cookieStore.get("code_verifier")?.value
 
     if (!code) {
       console.error("Missing authorization code")
@@ -101,11 +104,11 @@ export async function GET(request: NextRequest) {
       .sign(secret)
 
     // Save the token in a cookie
-    cookies().set("auth-token", token, COOKIE_CONFIG.AUTH_TOKEN)
+    cookieStore.set("auth-token", token, COOKIE_CONFIG.AUTH_TOKEN)
 
     // Clear the state and code_verifier cookies
-    cookies().delete("oauth_state")
-    cookies().delete("code_verifier")
+    cookieStore.delete("oauth_state")
+    cookieStore.delete("code_verifier")
 
     // Close the popup immediately without showing a message
     return createAuthResponse("Authentication Successful", "AUTH_SUCCESS")

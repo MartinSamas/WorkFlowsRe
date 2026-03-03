@@ -5,14 +5,15 @@ import { approvalDecisionSchema } from '../../../lib/validation';
 import { handleError, NotFoundError, ForbiddenError } from '../../../lib/errors';
 import type { RequestWithApprovals } from '../../../types';
 
-export async function POST(request: Request, { params }: { params: { id: string } }) {
+export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id: rawId } = await params;
   try {
     const user = await authenticateRequest();
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const id = parseInt(params.id, 10);
+    const id = parseInt(rawId, 10);
     if (isNaN(id)) {
       return NextResponse.json({ error: 'Invalid request ID' }, { status: 400 });
     }
@@ -81,6 +82,6 @@ export async function POST(request: Request, { params }: { params: { id: string 
 
     return NextResponse.json({ data: result });
   } catch (error) {
-    return handleError(error, `POST /api/requests/${params.id}/approve`);
+    return handleError(error, `POST /api/requests/${rawId}/approve`);
   }
 }

@@ -199,8 +199,8 @@ export default function ApprovalsPage() {
           dateRange={dialog.dateRange}
           requestType={dialog.requestType}
           action={dialog.action}
-          onConfirm={handleDecision}
-          onCancel={() => setDialog(null)}
+          onConfirmAction={handleDecision}
+          onCancelAction={() => setDialog(null)}
         />
       )}
     </div>

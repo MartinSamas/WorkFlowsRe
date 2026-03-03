@@ -5,14 +5,15 @@ import { updateRequestSchema } from '../../lib/validation';
 import { handleError, NotFoundError, ForbiddenError } from '../../lib/errors';
 import type { RequestWithApprovals } from '../../types';
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id: rawId } = await params;
   try {
     const user = await authenticateRequest();
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const id = parseInt(params.id, 10);
+    const id = parseInt(rawId, 10);
     if (isNaN(id)) {
       return NextResponse.json({ error: 'Invalid request ID' }, { status: 400 });
     }
@@ -34,18 +35,19 @@ export async function GET(request: Request, { params }: { params: { id: string }
 
     return NextResponse.json({ data: result });
   } catch (error) {
-    return handleError(error, `GET /api/requests/${params.id}`);
+    return handleError(error, `GET /api/requests/${rawId}`);
   }
 }
 
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id: rawId } = await params;
   try {
     const user = await authenticateRequest();
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const id = parseInt(params.id, 10);
+    const id = parseInt(rawId, 10);
     if (isNaN(id)) {
       return NextResponse.json({ error: 'Invalid request ID' }, { status: 400 });
     }
@@ -84,18 +86,19 @@ export async function PATCH(request: Request, { params }: { params: { id: string
 
     return NextResponse.json({ data: result });
   } catch (error) {
-    return handleError(error, `PATCH /api/requests/${params.id}`);
+    return handleError(error, `PATCH /api/requests/${rawId}`);
   }
 }
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id: rawId } = await params;
   try {
     const user = await authenticateRequest();
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const id = parseInt(params.id, 10);
+    const id = parseInt(rawId, 10);
     if (isNaN(id)) {
       return NextResponse.json({ error: 'Invalid request ID' }, { status: 400 });
     }
@@ -120,6 +123,6 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
 
     return new NextResponse(null, { status: 204 });
   } catch (error) {
-    return handleError(error, `DELETE /api/requests/${params.id}`);
+    return handleError(error, `DELETE /api/requests/${rawId}`);
   }
 }

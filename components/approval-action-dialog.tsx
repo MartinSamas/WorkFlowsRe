@@ -16,8 +16,8 @@ interface ApprovalActionDialogProps {
   dateRange: string;
   requestType: string;
   action: 'approve' | 'deny';
-  onConfirm: (notes: string) => Promise<void>;
-  onCancel: () => void;
+  onConfirmAction: (notes: string) => Promise<void>;
+  onCancelAction: () => void;
 }
 
 export function ApprovalActionDialog({
@@ -25,8 +25,8 @@ export function ApprovalActionDialog({
   dateRange,
   requestType,
   action,
-  onConfirm,
-  onCancel,
+  onConfirmAction,
+  onCancelAction,
 }: ApprovalActionDialogProps) {
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -39,7 +39,7 @@ export function ApprovalActionDialog({
     setSubmitting(true);
     setError(null);
     try {
-      await onConfirm(notes);
+      await onConfirmAction(notes);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
       setSubmitting(false);
@@ -47,7 +47,7 @@ export function ApprovalActionDialog({
   }
 
   return (
-    <Dialog open onOpenChange={(open) => !open && onCancel()}>
+    <Dialog open onOpenChange={(open) => !open && onCancelAction()}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
@@ -77,7 +77,7 @@ export function ApprovalActionDialog({
         {error && <p className="text-sm text-destructive">{error}</p>}
 
         <DialogFooter>
-          <Button variant="outline" onClick={onCancel} disabled={submitting}>
+          <Button variant="outline" onClick={onCancelAction} disabled={submitting}>
             Cancel
           </Button>
           <Button
