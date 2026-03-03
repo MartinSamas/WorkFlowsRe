@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { getCurrentUser } from '@/lib/actions';
 import { LogoutButton } from '@/components/logout-button';
 import { NavLinks } from '@/components/nav-links';
+import { NewRequestDialog } from '@/components/new-request-dialog';
 import { db } from '@/backend/lib/db';
 
 export async function Header() {
@@ -41,6 +42,9 @@ export async function Header() {
         </div>
 
         <div className="flex items-center gap-3">
+          {/* New request */}
+          <NewRequestDialog />
+
           {/* Profile picture */}
           <div className="relative h-8 w-8 overflow-hidden rounded-full bg-gray-200 flex items-center justify-center">
             {user.picture ? (
