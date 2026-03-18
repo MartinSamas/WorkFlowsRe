@@ -136,7 +136,7 @@ export function NewRequestDialog() {
 
   return (
     <>
-      <Button size="sm" onClick={() => setOpen(true)}>
+      <Button size="sm" onClick={() => handleOpenChange(true)}>
         <Plus className="h-4 w-4 mr-1" />
         New Request
       </Button>

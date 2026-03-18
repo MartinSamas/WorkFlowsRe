@@ -22,7 +22,6 @@ export function AddApproverDialog({ onAdded }: AddApproverDialogProps) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [role, setRole] = useState('');
-  const [groupEmailsRaw, setGroupEmailsRaw] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -31,7 +30,6 @@ export function AddApproverDialog({ onAdded }: AddApproverDialogProps) {
     setName('');
     setEmail('');
     setRole('');
-    setGroupEmailsRaw('');
     setError(null);
   }
 
@@ -44,23 +42,7 @@ export function AddApproverDialog({ onAdded }: AddApproverDialogProps) {
     e.preventDefault();
     setError(null);
 
-    const groupEmails =
-      type === 'group'
-        ? groupEmailsRaw
-            .split(/[,\n]+/)
-            .map((s) => s.trim())
-            .filter(Boolean)
-        : undefined;
-
-    if (type === 'group' && (!groupEmails || groupEmails.length === 0)) {
-      setError('Please enter at least one member email.');
-      return;
-    }
-
-    const body =
-      type === 'individual'
-        ? { type, name, email, role: role.trim() || undefined }
-        : { type, name, email, role: role.trim() || undefined, group_emails: groupEmails };
+    const body = { type, name, email, role: role.trim() || undefined };
 
     setSubmitting(true);
     try {
@@ -109,11 +91,10 @@ export function AddApproverDialog({ onAdded }: AddApproverDialogProps) {
                   key={t}
                   type="button"
                   onClick={() => setType(t)}
-                  className={`flex-1 py-2 text-sm font-medium transition-colors capitalize ${
-                    type === t
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:bg-muted'
-                  }`}
+                  className={`flex-1 py-2 text-sm font-medium transition-colors capitalize ${type === t
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:bg-muted'
+                    }`}
                 >
                   {t}
                 </button>
@@ -130,7 +111,7 @@ export function AddApproverDialog({ onAdded }: AddApproverDialogProps) {
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder={type === 'group' ? 'e.g. Engineering Team' : 'e.g. Jane Smith'}
+                placeholder={type === 'group' ? 'Group name' : 'User name'}
                 className={inputClass}
               />
             </div>
@@ -145,7 +126,7 @@ export function AddApproverDialog({ onAdded }: AddApproverDialogProps) {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder={type === 'group' ? 'e.g. engineering@company.com' : 'e.g. jane@company.com'}
+                placeholder={type === 'group' ? 'group@ui42.com' : 'user@ui42.com'}
                 className={inputClass}
               />
             </div>
@@ -163,26 +144,6 @@ export function AddApproverDialog({ onAdded }: AddApproverDialogProps) {
                 className={inputClass}
               />
             </div>
-
-            {type === 'group' && (
-              <div className="space-y-1">
-                <label className="text-sm font-medium" htmlFor="group-emails">
-                  Member Emails
-                  <span className="text-muted-foreground font-normal"> (one per line or comma-separated)</span>
-                </label>
-                <textarea
-                  id="group-emails"
-                  rows={4}
-                  value={groupEmailsRaw}
-                  onChange={(e) => setGroupEmailsRaw(e.target.value)}
-                  placeholder="alice@company.com&#10;bob@company.com"
-                  className={`${inputClass} resize-none`}
-                />
-                <p className="text-xs text-muted-foreground">
-                  Any one member can approve on behalf of the group.
-                </p>
-              </div>
-            )}
 
             {error && <p className="text-sm text-destructive">{error}</p>}
 

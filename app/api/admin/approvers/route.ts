@@ -16,7 +16,6 @@ const addApproverSchema = z.discriminatedUnion('type', [
     name: z.string().min(1),
     email: z.string().email(),
     role: z.string().optional(),
-    group_emails: z.array(z.string().email()).min(1, 'A group needs at least one member email'),
   }),
 ]);
 
@@ -58,12 +57,29 @@ export async function POST(request: Request) {
     }
 
     const data = validation.data;
+    
+    let group_emails: string[] | undefined = undefined;
+    if (data.type === 'group') {
+      try {
+        const { getGoogleGroupMembers } = await import('@/backend/lib/google-groups');
+        group_emails = await getGoogleGroupMembers(data.email);
+        if (group_emails.length === 0) {
+          throw new Error('Google group was found but has no user members.');
+        }
+      } catch (err: any) {
+        return NextResponse.json(
+          { error: err.message || 'Failed to fetch members from Google' },
+          { status: 400 }
+        );
+      }
+    }
+
     const approver = await db.addApprover({
       type: data.type,
       name: data.name,
       email: data.email,
       role: data.role,
-      group_emails: data.type === 'group' ? data.group_emails : undefined,
+      group_emails,
     });
 
     return NextResponse.json({ data: approver }, { status: 201 });
