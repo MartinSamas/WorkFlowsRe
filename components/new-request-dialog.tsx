@@ -10,7 +10,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { PROJECT_MANAGERS } from '@/lib/project-managers';
+import type { Approver } from '@/backend/db/database';
 
 const REQUEST_TYPES = [
   { value: 'vacation', label: 'Vacation' },
@@ -24,27 +24,57 @@ export function NewRequestDialog() {
   const [endDate, setEndDate] = useState('');
   const [requestType, setRequestType] = useState('vacation');
   const [notes, setNotes] = useState('');
-  const [selectedApprovers, setSelectedApprovers] = useState<string[]>([]);
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const [approvers, setApprovers] = useState<Approver[]>([]);
+  const [loadingApprovers, setLoadingApprovers] = useState(false);
+
+  async function loadApprovers() {
+    setLoadingApprovers(true);
+    try {
+      const res = await fetch('/api/admin/approvers');
+      if (res.ok) {
+        const json = await res.json();
+        setApprovers(json.data ?? []);
+      }
+    } catch {
+      // silently fail; user will see empty list
+    } finally {
+      setLoadingApprovers(false);
+    }
+  }
 
   function resetForm() {
     setStartDate('');
     setEndDate('');
     setRequestType('vacation');
     setNotes('');
-    setSelectedApprovers([]);
+    setSelectedIds([]);
     setError(null);
   }
 
   function handleOpenChange(value: boolean) {
-    if (!value) resetForm();
+    if (value) loadApprovers();
+    else resetForm();
     setOpen(value);
   }
 
-  function toggleApprover(email: string) {
-    setSelectedApprovers((prev) =>
-      prev.includes(email) ? prev.filter((e) => e !== email) : [...prev, email],
+  function toggleApprover(id: number) {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    );
+  }
+
+  /** Remove individuals who are already a member of a selected group */
+  function deduplicateApprovers(selected: Approver[]): Approver[] {
+    const selectedGroups = selected.filter((a) => a.type === 'group');
+    const groupMemberEmails = new Set(
+      selectedGroups.flatMap((g) => (g.group_emails ?? []).map((e) => e.toLowerCase())),
+    );
+    return selected.filter(
+      (a) => a.type === 'group' || !groupMemberEmails.has(a.email.toLowerCase()),
     );
   }
 
@@ -60,12 +90,19 @@ export function NewRequestDialog() {
       setError('End date must be after start date.');
       return;
     }
-    if (selectedApprovers.length === 0) {
+    if (selectedIds.length === 0) {
       setError('Please select at least one approver.');
       return;
     }
 
-    const approvers = PROJECT_MANAGERS.filter((pm) => selectedApprovers.includes(pm.email));
+    const rawSelected = approvers.filter((a) => selectedIds.includes(a.id));
+    const deduped = deduplicateApprovers(rawSelected);
+
+    const approversPayload = deduped.map((a) => ({
+      email: a.email,
+      name: a.name,
+      role: a.type === 'group' ? 'group' : (a.role ?? ''),
+    }));
 
     setSubmitting(true);
     try {
@@ -73,12 +110,11 @@ export function NewRequestDialog() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          // Append explicit UTC midnight to avoid local-timezone ambiguity
           start_date: `${startDate}T00:00:00.000Z`,
           end_date: `${endDate}T00:00:00.000Z`,
           request_type: requestType,
           notes: notes.trim() || undefined,
-          approvers,
+          approvers: approversPayload,
         }),
       });
 
@@ -94,6 +130,9 @@ export function NewRequestDialog() {
       setSubmitting(false);
     }
   }
+
+  const individuals = approvers.filter((a) => a.type === 'individual');
+  const groups = approvers.filter((a) => a.type === 'group');
 
   return (
     <>
@@ -172,25 +211,70 @@ export function NewRequestDialog() {
 
             <div className="space-y-2">
               <p className="text-sm font-medium">Approvers</p>
-              <div className="space-y-2">
-                {PROJECT_MANAGERS.map((pm) => (
-                  <label
-                    key={pm.email}
-                    className="flex items-center gap-3 rounded-md border px-3 py-2 cursor-pointer hover:bg-accent transition-colors"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selectedApprovers.includes(pm.email)}
-                      onChange={() => toggleApprover(pm.email)}
-                      className="h-4 w-4 accent-primary"
-                    />
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium">{pm.name}</p>
-                      <p className="text-xs text-muted-foreground">{pm.role}</p>
+
+              {loadingApprovers ? (
+                <p className="text-sm text-muted-foreground py-2">Loading approvers…</p>
+              ) : approvers.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-2">
+                  No approvers configured. Ask an admin to add some.
+                </p>
+              ) : (
+                <div className="space-y-3 max-h-52 overflow-y-auto pr-1">
+                  {groups.length > 0 && (
+                    <div className="space-y-1.5">
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                        Groups
+                      </p>
+                      {groups.map((a) => (
+                        <label
+                          key={a.id}
+                          className="flex items-center gap-3 rounded-md border px-3 py-2 cursor-pointer hover:bg-accent transition-colors"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={selectedIds.includes(a.id)}
+                            onChange={() => toggleApprover(a.id)}
+                            className="h-4 w-4 accent-primary"
+                          />
+                          <div className="min-w-0">
+                            <p className="text-sm font-medium">{a.name}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {a.email} · 1 response needed from{' '}
+                              {a.group_emails?.length ?? 0} member
+                              {(a.group_emails?.length ?? 0) !== 1 ? 's' : ''}
+                            </p>
+                          </div>
+                        </label>
+                      ))}
                     </div>
-                  </label>
-                ))}
-              </div>
+                  )}
+
+                  {individuals.length > 0 && (
+                    <div className="space-y-1.5">
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                        Individuals
+                      </p>
+                      {individuals.map((a) => (
+                        <label
+                          key={a.id}
+                          className="flex items-center gap-3 rounded-md border px-3 py-2 cursor-pointer hover:bg-accent transition-colors"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={selectedIds.includes(a.id)}
+                            onChange={() => toggleApprover(a.id)}
+                            className="h-4 w-4 accent-primary"
+                          />
+                          <div className="min-w-0">
+                            <p className="text-sm font-medium">{a.name}</p>
+                            <p className="text-xs text-muted-foreground">{a.role ?? a.email}</p>
+                          </div>
+                        </label>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {error && <p className="text-sm text-destructive">{error}</p>}

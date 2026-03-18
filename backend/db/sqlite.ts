@@ -1,7 +1,7 @@
 import Database from 'better-sqlite3';
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import type { DatabaseAdapter, Request, Approval, RequestFilters } from './database';
+import type { DatabaseAdapter, Request, Approval, RequestFilters, Admin, Approver } from './database';
 
 function toDate(value: string | null | undefined): Date {
   if (!value) return new Date();
@@ -47,6 +47,22 @@ interface ApprovalRow {
   created_at: string;
 }
 
+interface AdminRow {
+  id: number;
+  email: string;
+  added_at: string;
+}
+
+interface ApproverRow {
+  id: number;
+  type: string;
+  name: string;
+  email: string;
+  role: string | null;
+  group_emails: string | null;
+  created_at: string;
+}
+
 function rowToRequest(row: RequestRow): Request {
   return {
     id: row.id,
@@ -75,6 +91,26 @@ function rowToApproval(row: ApprovalRow): Approval {
     status: row.status as Approval['status'],
     decision_notes: row.decision_notes ?? undefined,
     responded_at: toDateOrUndefined(row.responded_at),
+    created_at: toDate(row.created_at),
+  };
+}
+
+function rowToAdmin(row: AdminRow): Admin {
+  return {
+    id: row.id,
+    email: row.email,
+    added_at: toDate(row.added_at),
+  };
+}
+
+function rowToApprover(row: ApproverRow): Approver {
+  return {
+    id: row.id,
+    type: row.type as Approver['type'],
+    name: row.name,
+    email: row.email,
+    role: row.role ?? undefined,
+    group_emails: row.group_emails ? (JSON.parse(row.group_emails) as string[]) : undefined,
     created_at: toDate(row.created_at),
   };
 }
@@ -249,5 +285,50 @@ export class SQLiteAdapter implements DatabaseAdapter {
     const row = this.db.prepare('SELECT * FROM approvals WHERE id = ?').get(id) as ApprovalRow | undefined;
     if (!row) throw new Error(`Approval with id ${id} not found`);
     return rowToApproval(row);
+  }
+
+  async getAdmins(): Promise<Admin[]> {
+    const rows = this.db.prepare('SELECT * FROM admins ORDER BY added_at ASC').all() as AdminRow[];
+    return rows.map(rowToAdmin);
+  }
+
+  async addAdmin(email: string): Promise<Admin> {
+    this.db.prepare('INSERT OR IGNORE INTO admins (email) VALUES (?)').run(email);
+    const row = this.db.prepare('SELECT * FROM admins WHERE email = ?').get(email) as AdminRow;
+    return rowToAdmin(row);
+  }
+
+  async removeAdmin(email: string): Promise<void> {
+    this.db.prepare('DELETE FROM admins WHERE email = ?').run(email);
+  }
+
+  async isAdmin(email: string): Promise<boolean> {
+    const row = this.db.prepare('SELECT id FROM admins WHERE email = ?').get(email);
+    return row !== undefined;
+  }
+
+  async getApprovers(): Promise<Approver[]> {
+    const rows = this.db.prepare('SELECT * FROM approvers ORDER BY created_at ASC').all() as ApproverRow[];
+    return rows.map(rowToApprover);
+  }
+
+  async addApprover(data: Omit<Approver, 'id' | 'created_at'>): Promise<Approver> {
+    const stmt = this.db.prepare(`
+      INSERT INTO approvers (type, name, email, role, group_emails)
+      VALUES (@type, @name, @email, @role, @group_emails)
+    `);
+    const result = stmt.run({
+      type: data.type,
+      name: data.name,
+      email: data.email,
+      role: data.role ?? null,
+      group_emails: data.group_emails ? JSON.stringify(data.group_emails) : null,
+    });
+    const row = this.db.prepare('SELECT * FROM approvers WHERE id = ?').get(result.lastInsertRowid) as ApproverRow;
+    return rowToApprover(row);
+  }
+
+  async removeApprover(id: number): Promise<void> {
+    this.db.prepare('DELETE FROM approvers WHERE id = ?').run(id);
   }
 }

@@ -2,13 +2,15 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface NavLinksProps {
   pendingApprovalsCount?: number;
+  isAdmin?: boolean;
 }
 
-export function NavLinks({ pendingApprovalsCount }: NavLinksProps) {
+export function NavLinks({ pendingApprovalsCount, isAdmin }: NavLinksProps) {
   const pathname = usePathname();
 
   const links = [
@@ -37,6 +39,21 @@ export function NavLinks({ pendingApprovalsCount }: NavLinksProps) {
           )}
         </Link>
       ))}
+
+      {isAdmin && (
+        <Link
+          href="/dashboard"
+          className={cn(
+            'flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md transition-colors',
+            pathname.startsWith('/dashboard')
+              ? 'bg-primary/10 text-primary font-medium'
+              : 'text-muted-foreground hover:text-foreground hover:bg-muted',
+          )}
+        >
+          <Settings className="h-3.5 w-3.5" />
+          Dashboard
+        </Link>
+      )}
     </nav>
   );
 }

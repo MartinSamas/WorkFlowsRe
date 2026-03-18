@@ -34,6 +34,23 @@ export interface RequestFilters {
   start_date_to?: Date;
 }
 
+export interface Admin {
+  id: number;
+  email: string;
+  added_at: Date;
+}
+
+export interface Approver {
+  id: number;
+  type: 'individual' | 'group';
+  name: string;
+  email: string;
+  role?: string;
+  /** JSON array of member emails — only set for groups */
+  group_emails?: string[];
+  created_at: Date;
+}
+
 export interface DatabaseAdapter {
   // Request operations
   createRequest(data: Omit<Request, 'id' | 'created_at' | 'updated_at'>): Promise<Request>;
@@ -48,6 +65,17 @@ export interface DatabaseAdapter {
   getApprovalsByRequest(requestId: number): Promise<Approval[]>;
   getApprovalsByApprover(approverEmail: string): Promise<Approval[]>;
   updateApproval(id: number, data: Partial<Approval>): Promise<Approval>;
+
+  // Admin operations
+  getAdmins(): Promise<Admin[]>;
+  addAdmin(email: string): Promise<Admin>;
+  removeAdmin(email: string): Promise<void>;
+  isAdmin(email: string): Promise<boolean>;
+
+  // Approver (configurable pool) operations
+  getApprovers(): Promise<Approver[]>;
+  addApprover(data: Omit<Approver, 'id' | 'created_at'>): Promise<Approver>;
+  removeApprover(id: number): Promise<void>;
 
   // Utility operations
   initialize(): Promise<void>;

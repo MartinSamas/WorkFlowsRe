@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useEffect, useState} from 'react';
+import { use, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { StatusBadge } from '@/components/status-badge';
@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { formatDate, formatDateRange, countDays, relativeTime } from '@/lib/date-utils';
 import type { RequestWithApprovals } from '@/app/api/types';
 
-export default function RequestDetailPage({ params }: { params: Promise<{ id: string }>}) {
+export default function RequestDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const [request, setRequest] = useState<RequestWithApprovals | null>(null);
   const [loading, setLoading] = useState(true);
@@ -80,7 +80,7 @@ export default function RequestDetailPage({ params }: { params: Promise<{ id: st
     <div className="space-y-6 max-w-2xl">
       {/* Back button */}
       <Button variant="ghost" size="sm" onClick={() => router.push('/requests')}>
-        ← Back to Requests
+        Back to Requests
       </Button>
 
       {/* Header card */}

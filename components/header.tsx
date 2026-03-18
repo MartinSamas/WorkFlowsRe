@@ -11,11 +11,16 @@ export async function Header() {
   if (!user) return null;
 
   let pendingApprovalsCount = 0;
+  let isAdmin = false;
   try {
-    const approvals = await db.getApprovalsByApprover(user.email);
+    const [approvals, adminStatus] = await Promise.all([
+      db.getApprovalsByApprover(user.email),
+      db.isAdmin(user.email),
+    ]);
     pendingApprovalsCount = approvals.filter((a) => a.status === 'pending').length;
+    isAdmin = adminStatus;
   } catch {
-    // ignore errors; count stays 0
+    // ignore errors; defaults stay 0 / false
   }
 
   return (
@@ -23,7 +28,7 @@ export async function Header() {
       <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
         <div className="flex items-center gap-4">
           <span className="font-semibold text-sm">WorkFlows</span>
-          <NavLinks pendingApprovalsCount={pendingApprovalsCount} />
+          <NavLinks pendingApprovalsCount={pendingApprovalsCount} isAdmin={isAdmin} />
         </div>
 
         <div className="flex items-center gap-3">

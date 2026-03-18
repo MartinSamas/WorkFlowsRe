@@ -31,7 +31,30 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     }
 
     const approvals = await db.getApprovalsByRequest(id);
-    const userApproval = approvals.find((a) => a.approver_email === user.email);
+
+    // Check direct approval row first
+    let userApproval = approvals.find(
+      (a) => a.approver_email.toLowerCase() === user.email.toLowerCase(),
+    );
+
+    // If not found directly, check if user is a member of a group that has an approval row
+    if (!userApproval) {
+      const allApprovers = await db.getApprovers();
+      const groupsUserBelongsTo = allApprovers
+        .filter(
+          (a) =>
+            a.type === 'group' &&
+            a.group_emails?.some((e) => e.toLowerCase() === user.email.toLowerCase()),
+        )
+        .map((g) => g.email);
+
+      userApproval = approvals.find((a) =>
+        groupsUserBelongsTo.some(
+          (ge) => ge.toLowerCase() === a.approver_email.toLowerCase(),
+        ),
+      );
+    }
+
     if (!userApproval) {
       throw new ForbiddenError('You are not an approver for this request');
     }
