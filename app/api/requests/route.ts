@@ -66,6 +66,7 @@ export async function POST(request: Request) {
 
     const validation = createRequestSchema.safeParse(body);
     if (!validation.success) {
+      console.error('Validation failed for /api/requests:', validation.error.format());
       return NextResponse.json(
         { error: 'Invalid input', details: validation.error.errors },
         { status: 400 },

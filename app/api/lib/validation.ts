@@ -20,10 +20,18 @@ export const createRequestSchema = z
     message: 'Start date must be before end date',
     path: ['start_date'],
   })
-  .refine((data) => new Date(data.start_date) > new Date(), {
-    message: 'Start date must be in the future',
-    path: ['start_date'],
-  });
+  .refine(
+    (data) => {
+      const start = new Date(data.start_date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return start >= today;
+    },
+    {
+      message: 'Start date cannot be in the past',
+      path: ['start_date'],
+    },
+  );
 
 export const updateRequestSchema = z.object({
   notes: z.string().optional(),

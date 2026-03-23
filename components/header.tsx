@@ -13,14 +13,41 @@ export async function Header() {
   let pendingApprovalsCount = 0;
   let isAdmin = false;
   try {
-    const [approvals, adminStatus] = await Promise.all([
-      db.getApprovalsByApprover(user.email),
-      db.isAdmin(user.email),
-    ]);
-    pendingApprovalsCount = approvals.filter((a) => a.status === 'pending').length;
-    isAdmin = adminStatus;
-  } catch {
-    // ignore errors; defaults stay 0 / false
+    const allApprovers = await db.getApprovers();
+    const groupsUserBelongsTo = allApprovers
+      .filter(
+        (a) =>
+          a.type === 'group' &&
+          a.group_emails?.some((e) => e.toLowerCase() === user.email.toLowerCase()),
+      )
+      .map((g) => g.email);
+
+    // Collect approval rows assigned directly to the user or to one of their groups
+    const directApprovals = await db.getApprovalsByApprover(user.email);
+    const groupApprovals = (
+      await Promise.all(groupsUserBelongsTo.map((ge) => db.getApprovalsByApprover(ge)))
+    ).flat();
+
+    // Map and de-duplicate by approval id
+    const approvalMap = new Map();
+    [...directApprovals, ...groupApprovals].forEach((a) => {
+      if (a.status === 'pending') {
+        approvalMap.set(a.id, a);
+      }
+    });
+
+    const pendingApprovals = Array.from(approvalMap.values());
+    const requestsStatus = await Promise.all(
+      pendingApprovals.map(async (approval) => {
+        const req = await db.getRequestById(approval.request_id);
+        return req?.status === 'pending' ? 1 : 0;
+      }),
+    );
+
+    pendingApprovalsCount = requestsStatus.reduce((acc, curr) => acc + curr, 0);
+    isAdmin = await db.isAdmin(user.email);
+  } catch (err) {
+    console.error('Error fetching pending notifications count:', err);
   }
 
   return (

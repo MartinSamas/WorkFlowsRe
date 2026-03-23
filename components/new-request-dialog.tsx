@@ -120,6 +120,10 @@ export function NewRequestDialog() {
 
       if (!res.ok) {
         const json = await res.json();
+        if (json.details && Array.isArray(json.details)) {
+          const messages = json.details.map((d: any) => d.message).join('\n');
+          throw new Error(messages);
+        }
         throw new Error(json?.error ?? 'Failed to submit request');
       }
 
@@ -277,7 +281,9 @@ export function NewRequestDialog() {
               )}
             </div>
 
-            {error && <p className="text-sm text-destructive">{error}</p>}
+            {error && (
+              <p className="text-sm text-destructive whitespace-pre-wrap">{error}</p>
+            )}
 
             <DialogFooter>
               <Button
