@@ -29,7 +29,7 @@ export async function getGoogleGroupMembers(groupEmail: string): Promise<string[
 
     const members = response.data.members || [];
 
-    // Filter only user members (ignoring nested groups for simplicity, though we could resolve them recursively if needed)
+    // Filter only user members (ignoring nested groups for simplicity, though could be resolved recursively if needed)
     return members
       .filter((member) => member.email && member.type === 'USER')
       .map((member) => member.email!);

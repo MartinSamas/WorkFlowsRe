@@ -21,10 +21,7 @@ export default async function DashboardPage() {
         </p>
       </div>
 
-      <section>
-        <h2 className="text-lg font-semibold mb-4">Approver Management</h2>
-        <DashboardClient initialApprovers={approvers} />
-      </section>
+      <DashboardClient initialApprovers={approvers} />
     </div>
   );
 }

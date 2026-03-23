@@ -57,7 +57,7 @@ export async function POST(request: Request) {
     }
 
     const data = validation.data;
-    
+
     let group_emails: string[] | undefined = undefined;
     if (data.type === 'group') {
       try {
@@ -67,6 +67,7 @@ export async function POST(request: Request) {
           throw new Error('Google group was found but has no user members.');
         }
       } catch (err: any) {
+        console.error('Google Groups error:', err?.response?.data ?? err?.message ?? err);
         return NextResponse.json(
           { error: err.message || 'Failed to fetch members from Google' },
           { status: 400 }
