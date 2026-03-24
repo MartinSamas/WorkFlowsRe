@@ -1,0 +1,81 @@
+import Link from 'next/link';
+import { getCurrentUser } from '@/lib/actions';
+import { db } from '@/backend/lib/db';
+import { NewRequestDialog } from '@/components/new-request-dialog';
+import { SidebarLinks } from '@/components/sidebar-links';
+
+export async function Sidebar({ className }: { className?: string }) {
+  const user = await getCurrentUser();
+  if (!user) return null;
+
+  let pendingApprovalsCount = 0;
+  let isAdmin = false;
+
+  try {
+    const allApprovers = await db.getApprovers();
+    const groupsUserBelongsTo = allApprovers
+      .filter(
+        (a) =>
+          a.type === 'group' &&
+          a.group_emails?.some((e) => e.toLowerCase() === user.email.toLowerCase()),
+      )
+      .map((g) => g.email);
+
+    const directApprovals = await db.getApprovalsByApprover(user.email);
+    const groupApprovals = (
+      await Promise.all(groupsUserBelongsTo.map((ge) => db.getApprovalsByApprover(ge)))
+    ).flat();
+
+    const approvalMap = new Map();
+    [...directApprovals, ...groupApprovals].forEach((a) => {
+      if (a.status === 'pending') approvalMap.set(a.id, a);
+    });
+
+    const pendingApprovals = Array.from(approvalMap.values());
+    const requestsStatus = await Promise.all(
+      pendingApprovals.map(async (approval) => {
+        const req = await db.getRequestById(approval.request_id);
+        return req?.status === 'pending' ? 1 : 0;
+      }),
+    );
+
+    pendingApprovalsCount = requestsStatus.reduce((acc: number, curr) => acc + curr, 0);
+    isAdmin = await db.isAdmin(user.email);
+  } catch {
+    // silently fallback
+  }
+
+  return (
+    <aside
+      className={`flex-shrink-0 flex flex-col border-r bg-white ${className || ''}`}
+      style={{ width: 'var(--sidebar-width)', minHeight: 'calc(100vh - 4rem)' }}
+    >
+      {/* Workflow section header with icon */}
+      <div className="flex items-center gap-3 px-4 pt-5 pb-4 border-b">
+        <div className="flex-shrink-0 bg-blue-500 rounded p-1.5 h-8 w-8 flex items-center justify-center">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 100 100"
+            xmlns="http://www.w3.org/2000/svg"
+            className="flex-shrink-0"
+          >
+            <path fill="none" d="M5 5h90v90H5z" />
+            <path
+              fill="#fff"
+              d="M78.34 67.547c-5.382 0-9.864 3.888-10.809 9H24.339c-6.735 0-6.993-6.292-7-7v-9c0-6.735 6.292-6.993 7-7H40.53c.944 5.112 5.428 9 10.81 9s9.864-3.888 10.809-9H77.34c8.701 0 11-7.195 11-11v-9c0-8.701-7.195-11-11-11H35.148c-.944-5.112-5.427-9-10.809-9-6.065 0-11 4.935-11 11s4.935 11 11 11c5.382 0 9.865-3.888 10.809-9H77.33c.718.007 7.01.265 7.01 7v8.99c-.007.717-.265 7.01-7 7.01H62.148c-.944-5.112-5.427-9-10.809-9s-9.865 3.888-10.81 9h-16.19c-3.805 0-11 2.299-11 11v9c0 3.805 2.299 11 11 11h43.192c.944 5.112 5.427 9 10.809 9 6.065 0 11-4.935 11-11s-4.935-11-11-11m-54.001-36c-3.86 0-7-3.14-7-7s3.14-7 7-7 7 3.14 7 7-3.14 7-7 7m27.001 13c3.859 0 7 3.14 7 7s-3.141 7-7 7-7-3.141-7-7c-.001-3.86 3.14-7 7-7m27 41c-3.859 0-7-3.141-7-7s3.141-7 7-7 7 3.141 7 7-3.141 7-7 7"
+            />
+          </svg>
+        </div>
+        <span className="font-medium text-sm text-gray-800">Workflow</span>
+      </div>
+
+      <nav className="flex-1 px-3 py-4 flex flex-col gap-1">
+        <SidebarLinks pendingApprovalsCount={pendingApprovalsCount} isAdmin={isAdmin} />
+        <div className="mt-4">
+          <NewRequestDialog />
+        </div>
+      </nav>
+    </aside>
+  );
+}

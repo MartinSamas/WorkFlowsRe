@@ -2,6 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'PP Neue Machina';
+  src: url('/fonts/PPNeueMachina-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'PP Neue Machina';
+  src: url('/fonts/PPNeueMachina-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'PP Neue Machina';
+  src: url('/fonts/PPNeueMachina-Ultrabold.otf') format('opentype');
+  font-weight: 800;
+  font-style: normal;
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
@@ -10,14 +31,16 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+    --background: 218 20% 96%;
+    /* #f4f6f8 */
+    --foreground: 0 0% 15%;
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
+    --card-foreground: 0 0% 15%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
+    --popover-foreground: 0 0% 15%;
+    --primary: 217 91% 60%;
+    /* blue-500 */
+    --primary-foreground: 0 0% 100%;
     --secondary: 0 0% 96.1%;
     --secondary-foreground: 0 0% 9%;
     --muted: 0 0% 96.1%;
@@ -58,19 +81,47 @@
 @layer base {
   * {
     @apply border-border;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
+
   body {
     @apply bg-background text-foreground;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: "TT Norms Pro", sans-serif;
   }
 }
 
-/* Animaciones personalizadas */
+/* Reference UI color tokens */
+:root {
+  --nav-dark: #11162E;
+  --nav-dark-hover: #16222e;
+  --nav-accent: #3b82f6;
+  --sidebar-width: 210px;
+  --page-header-bg: #f4f6f8;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  font-family: "PP Neue Machina", "TT Norms Pro", sans-serif;
+  font-weight: 700;
+  color: #11162e;
+  margin-top: 0;
+  margin-bottom: 40px;
+}
+
+.site-logo {
+  font-family: "PP Neue Machina", "TT Norms Pro", sans-serif;
+}
+
 @keyframes fade-in {
   from {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -82,6 +133,7 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

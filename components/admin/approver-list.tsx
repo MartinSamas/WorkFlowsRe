@@ -38,19 +38,19 @@ export function ApproverList({ approvers, onRemove }: ApproverListProps) {
       <table className="w-full text-sm">
         <thead className="bg-muted/50 border-b">
           <tr>
-            <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground">
               Type
             </th>
-            <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground">
               Name
             </th>
-            <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground">
               Email
             </th>
-            <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground">
               Role / Members
             </th>
-            <th className="px-4 py-3 text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            <th className="px-4 py-3 text-right text-xs font-semibold text-muted-foreground">
               Actions
             </th>
           </tr>

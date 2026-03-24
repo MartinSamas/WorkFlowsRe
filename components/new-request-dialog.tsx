@@ -140,9 +140,9 @@ export function NewRequestDialog() {
 
   return (
     <>
-      <Button size="sm" onClick={() => handleOpenChange(true)}>
-        <Plus className="h-4 w-4 mr-1" />
-        New Request
+      <Button className="w-full justify-start" size="sm" onClick={() => handleOpenChange(true)}>
+        <Plus className="h-4 w-4 mr-2" />
+        New request
       </Button>
 
       <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -226,7 +226,7 @@ export function NewRequestDialog() {
                 <div className="space-y-3 max-h-52 overflow-y-auto pr-1">
                   {groups.length > 0 && (
                     <div className="space-y-1.5">
-                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                      <p className="text-xs font-semibold text-muted-foreground">
                         Groups
                       </p>
                       {groups.map((a) => (
@@ -255,7 +255,7 @@ export function NewRequestDialog() {
 
                   {individuals.length > 0 && (
                     <div className="space-y-1.5">
-                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                      <p className="text-xs font-semibold text-muted-foreground">
                         Individuals
                       </p>
                       {individuals.map((a) => (
@@ -294,7 +294,10 @@ export function NewRequestDialog() {
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={submitting}>
+              <Button type="submit" disabled={submitting} className="flex items-center gap-2">
+                {submitting && (
+                  <span className="h-3.5 w-3.5 rounded-full border-2 border-current border-t-transparent animate-spin" />
+                )}
                 {submitting ? 'Submitting…' : 'Submit Request'}
               </Button>
             </DialogFooter>

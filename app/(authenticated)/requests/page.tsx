@@ -25,7 +25,7 @@ export default function RequestsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <p className="text-muted-foreground">Loading requests…</p>
+        <div className="h-8 w-8 rounded-full border-[3px] border-gray-200 border-t-blue-500 animate-spin" />
       </div>
     );
   }
@@ -40,7 +40,10 @@ export default function RequestsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">My Holiday Requests</h1>
+      {/* Page header */}
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-black m-0">My Holiday Requests</h1>
+      </div>
 
       {requests.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 space-y-4 text-center">
@@ -50,27 +53,27 @@ export default function RequestsPage() {
           </p>
         </div>
       ) : (
-        <div className="rounded-lg border overflow-hidden">
+        <div className="rounded-lg border overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full text-left">
-              <thead className="border-b bg-muted/50">
-                <tr>
-                  <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              <thead>
+                <tr className="bg-muted/50 border-b">
+                  <th className="px-4 py-3 text-xs font-semibold text-gray-500">
                     Status
                   </th>
-                  <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  <th className="px-4 py-3 text-xs font-semibold text-gray-500">
                     Dates
                   </th>
-                  <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  <th className="px-4 py-3 text-xs font-semibold text-gray-500">
                     Type
                   </th>
-                  <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider text-center">
+                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 text-center">
                     Days
                   </th>
-                  <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  <th className="px-4 py-3 text-xs font-semibold text-gray-500">
                     Notes
                   </th>
-                  <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  <th className="px-4 py-3 text-xs font-semibold text-gray-500">
                     Created
                   </th>
                 </tr>

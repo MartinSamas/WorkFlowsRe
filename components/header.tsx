@@ -1,8 +1,6 @@
 import Image from 'next/image';
 import { getCurrentUser } from '@/lib/actions';
 import { LogoutButton } from '@/components/logout-button';
-import { NavLinks } from '@/components/nav-links';
-import { NewRequestDialog } from '@/components/new-request-dialog';
 import { db } from '@/backend/lib/db';
 
 export async function Header() {
@@ -22,13 +20,11 @@ export async function Header() {
       )
       .map((g) => g.email);
 
-    // Collect approval rows assigned directly to the user or to one of their groups
     const directApprovals = await db.getApprovalsByApprover(user.email);
     const groupApprovals = (
       await Promise.all(groupsUserBelongsTo.map((ge) => db.getApprovalsByApprover(ge)))
     ).flat();
 
-    // Map and de-duplicate by approval id
     const approvalMap = new Map();
     [...directApprovals, ...groupApprovals].forEach((a) => {
       if (a.status === 'pending') {
@@ -51,45 +47,61 @@ export async function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
-      <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-        <div className="flex items-center gap-4">
-          <span className="font-semibold text-sm">WorkFlows</span>
-          <NavLinks pendingApprovalsCount={pendingApprovalsCount} isAdmin={isAdmin} />
+    <header className="sticky top-0 z-60 w-full bg-black">
+      <div className="flex items-center justify-between px-8 h-[72px]">
+        <div className="flex items-center gap-2">
+          <a href="#" className="site-logo flex items-center gap-2 text-white no-underline">
+            <Image
+              src="https://taskman.ui42.sk/images/taskman-logo.svg"
+              alt="ui42 logo"
+              width={48}
+              height={48}
+              className="flex-shrink-0"
+              unoptimized
+            />
+            <span className="flex flex-col leading-tight">
+              <span className="font-bold text-xl leading-[20px]">WorkFlows</span>
+              <small className="text-[#cccccc]">by ui42</small>
+            </span>
+          </a>
         </div>
 
-        <div className="flex items-center gap-3">
-          {/* New request */}
-          <NewRequestDialog />
-
-          {/* Profile picture */}
-          <div className="relative h-8 w-8 overflow-hidden rounded-full bg-gray-200 flex items-center justify-center">
+        <div className="flex items-center gap-2">
+          <div className="relative h-10 w-10 overflow-hidden rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
             {user.picture ? (
               <Image
                 src={user.picture}
                 alt={user.name}
                 fill
                 className="object-cover"
-                sizes="32px"
+                sizes="40px"
               />
             ) : (
-              <span className="text-xs font-medium text-gray-600">{
-                user.name
+              <span className="text-[10px] font-semibold text-white">
+                {user.name
                   .split(' ')
+                  .reverse()
                   .map((n) => n[0])
                   .join('')
                   .slice(0, 2)
-                  .toUpperCase()}</span>
+                  .toUpperCase()}
+              </span>
             )}
           </div>
-
-          {/* Name */}
-          <span className="hidden sm:block text-sm font-medium">{user.name}</span>
-
-          {/* Logout */}
+          <span className="hidden sm:block font-medium text-white/90">
+            {user.name.split(' ').reverse().join(' ')}
+          </span>
+          <span className="text-white/30 select-none hidden sm:block">|</span>
           <LogoutButton />
         </div>
       </div>
+
+      <div
+        id="header-meta"
+        data-pending={pendingApprovalsCount}
+        data-admin={isAdmin ? 'true' : 'false'}
+        className="hidden"
+      />
     </header>
   );
 }

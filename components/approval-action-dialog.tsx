@@ -84,7 +84,11 @@ export function ApprovalActionDialog({
             variant={isApprove ? 'default' : 'destructive'}
             onClick={handleConfirm}
             disabled={submitting}
+            className="flex items-center gap-2"
           >
+            {submitting && (
+              <span className="h-3.5 w-3.5 rounded-full border-2 border-current border-t-transparent animate-spin" />
+            )}
             {submitting ? (isApprove ? 'Approving…' : 'Denying…') : isApprove ? 'Approve' : 'Deny'}
           </Button>
         </DialogFooter>

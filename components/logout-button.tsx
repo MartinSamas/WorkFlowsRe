@@ -5,7 +5,7 @@ export function LogoutButton() {
     <form action={logoutAction}>
       <button
         type="submit"
-        className="text-sm text-gray-500 hover:text-gray-800 transition-colors"
+        className="text-sm text-white/60 hover:text-white transition-colors"
         aria-label="Sign out"
       >
         Sign out

@@ -142,7 +142,7 @@ export default function RequestDetailPage({ params }: { params: Promise<{ id: st
         {/* Admin notes */}
         {request.admin_notes && (
           <div className="rounded-md bg-muted p-3">
-            <p className="text-muted-foreground text-xs font-semibold uppercase mb-1">Admin Notes</p>
+            <p className="text-muted-foreground text-xs font-semibold mb-1">Admin Notes</p>
             <p className="text-sm whitespace-pre-line">{request.admin_notes}</p>
           </div>
         )}
