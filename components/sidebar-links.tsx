@@ -33,13 +33,18 @@ export function SidebarLinks({ pendingApprovalsCount, isAdmin }: SidebarLinksPro
             <Link
               href={link.href}
               className={cn(
-                'flex items-center gap-2.5 px-3 py-2 rounded-md text-sm font-medium transition-colors',
-                isActive
-                  ? 'bg-blue-50 text-blue-700 border-l-[3px] border-blue-500 pl-[9px]'
-                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 border-l-[3px] border-transparent pl-[9px]',
+                'group flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors',
+                isActive ? 'text-gray-900' : 'text-gray-600 hover:text-gray-900'
               )}
             >
-              <Icon className="h-4 w-4 flex-shrink-0" />
+              <div
+                className={cn(
+                  'flex items-center justify-center shrink-0 w-[36px] h-[36px] mr-2 rounded-md transition-colors duration-[400ms] text-[#11162e]',
+                  isActive ? 'bg-[rgba(53,140,255,0.2)]' : 'group-hover:bg-[rgba(53,140,255,0.2)]'
+                )}
+              >
+                <Icon className="h-[1.6rem] w-[1.6rem]" strokeWidth={1} />
+              </div>
               <span className="flex-1 leading-snug">{link.label}</span>
               {link.badge !== undefined && link.badge > 0 && (
                 <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1 text-[11px] font-bold bg-blue-500 text-white rounded-full">
@@ -56,13 +61,22 @@ export function SidebarLinks({ pendingApprovalsCount, isAdmin }: SidebarLinksPro
           <Link
             href="/dashboard"
             className={cn(
-              'flex items-center gap-2.5 px-3 py-2 rounded-md text-sm font-medium transition-colors border-l-[3px] pl-[9px]',
+              'group flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors',
               pathname.startsWith('/dashboard')
-                ? 'bg-blue-50 text-blue-700 border-blue-500'
-                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 border-transparent',
+                ? 'text-gray-900'
+                : 'text-gray-600 hover:text-gray-900'
             )}
           >
-            <Settings className="h-4 w-4 flex-shrink-0" />
+            <div
+              className={cn(
+                'flex items-center justify-center shrink-0 w-[36px] h-[36px] mr-2 rounded-md transition-colors duration-[400ms] text-[#11162e]',
+                pathname.startsWith('/dashboard')
+                  ? 'bg-[rgba(53,140,255,0.2)]'
+                  : 'group-hover:bg-[rgba(53,140,255,0.2)]'
+              )}
+            >
+              <Settings className="h-[1.6rem] w-[1.6rem]" strokeWidth={1} />
+            </div>
             <span>Dashboard</span>
           </Link>
         </li>

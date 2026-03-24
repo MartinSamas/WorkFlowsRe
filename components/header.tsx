@@ -47,7 +47,7 @@ export async function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-60 w-full bg-black">
+    <header className="fixed top-0 left-0 right-0 z-50 w-full bg-black">
       <div className="flex items-center justify-between px-8 h-[72px]">
         <div className="flex items-center gap-2">
           <a href="#" className="site-logo flex items-center gap-2 text-white no-underline">
