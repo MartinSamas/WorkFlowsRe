@@ -48,7 +48,7 @@ export async function Sidebar({ className }: { className?: string }) {
   return (
     <aside
       className={`flex-shrink-0 flex flex-col border-r ${className || ''}`}
-      style={{ width: 'var(--sidebar-width)', minHeight: 'calc(100vh - 4rem)' }}
+      style={{ width: 'var(--sidebar-width)' }}
     >
       {/* Workflow section header with icon */}
       <div className="flex items-center gap-3 px-4 pt-5 pb-4 border-b">
