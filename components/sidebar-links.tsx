@@ -45,12 +45,9 @@ export function SidebarLinks({ pendingApprovalsCount, isAdmin }: SidebarLinksPro
               >
                 <Icon className="h-[1.6rem] w-[1.6rem]" strokeWidth={1} />
               </div>
-              <span className="flex-1 leading-snug">{link.label}</span>
-              {link.badge !== undefined && link.badge > 0 && (
-                <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1 text-[11px] font-bold bg-blue-500 text-white rounded-full">
-                  {link.badge}
-                </span>
-              )}
+              <span className="flex-1 leading-snug">
+                {link.label} {link.badge !== undefined && link.badge > 0 && <strong>{link.badge}</strong>}
+              </span>
             </Link>
           </li>
         );
