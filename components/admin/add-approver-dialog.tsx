@@ -73,7 +73,7 @@ export function AddApproverDialog({ onAdded }: AddApproverDialogProps) {
   return (
     <>
       <Button size="sm" onClick={() => setOpen(true)}>
-        <Plus className="h-4 w-4 mr-1" />
+        <Plus className="h-4 w-4 mr-1" absoluteStrokeWidth={true} strokeWidth={1} />
         Add Approver
       </Button>
 

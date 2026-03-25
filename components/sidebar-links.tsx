@@ -43,7 +43,7 @@ export function SidebarLinks({ pendingApprovalsCount, isAdmin }: SidebarLinksPro
                   isActive ? 'bg-[rgba(53,140,255,0.2)]' : 'group-hover:bg-[rgba(53,140,255,0.2)]'
                 )}
               >
-                <Icon className="h-[1.6rem] w-[1.6rem]" strokeWidth={1} />
+                <Icon className="h-[1.6rem] w-[1.6rem]" absoluteStrokeWidth={true} strokeWidth={1} />
               </div>
               <span className="flex-1 leading-snug">
                 {link.label} {link.badge !== undefined && link.badge > 0 && <strong>{link.badge}</strong>}
@@ -72,7 +72,7 @@ export function SidebarLinks({ pendingApprovalsCount, isAdmin }: SidebarLinksPro
                   : 'group-hover:bg-[rgba(53,140,255,0.2)]'
               )}
             >
-              <Settings className="h-[1.6rem] w-[1.6rem]" strokeWidth={1} />
+              <Settings className="h-[1.6rem] w-[1.6rem]" absoluteStrokeWidth={true} strokeWidth={1} />
             </div>
             <span>Dashboard</span>
           </Link>

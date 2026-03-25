@@ -141,11 +141,12 @@ export function NewRequestDialog() {
   return (
     <>
       <Button
-        className="w-full justify-start text-[#11162e] bg-white shadow-[0px_2px_12px_rgba(0,0,0,0.06)] hover:shadow-[0px_2px_12px_rgba(0,0,0,0.12)] transition-shadow duration-[400ms]"
+        className="w-full justify-start"
         size="sm"
+        variant="background"
         onClick={() => handleOpenChange(true)}
       >
-        <Plus className="h-4 w-4 mr-2" />
+        <Plus className="h-4 w-4 mr-2" absoluteStrokeWidth={true} strokeWidth={1} />
         New request
       </Button>
 

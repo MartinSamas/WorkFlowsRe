@@ -1,6 +1,7 @@
 'use client';
 
 import { use, useEffect, useState } from 'react';
+import { ArrowLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { StatusBadge } from '@/components/status-badge';
@@ -80,7 +81,7 @@ export default function RequestDetailPage({ params }: { params: Promise<{ id: st
     <div className="space-y-6 max-w-2xl">
       {/* Back button */}
       <Button variant="ghost" size="sm" onClick={() => router.push('/requests')}>
-        Back to Requests
+        <ArrowLeft absoluteStrokeWidth={true} strokeWidth={1} /> Back to Requests
       </Button>
 
       {/* Header card */}
