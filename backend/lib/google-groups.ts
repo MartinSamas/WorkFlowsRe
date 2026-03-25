@@ -12,12 +12,11 @@ export async function getGoogleGroupMembers(groupEmail: string): Promise<string[
     );
   }
 
-  // Domain-Wide Delegation authentication
   const auth = new google.auth.JWT({
     email: GOOGLE_SERVICE_ACCOUNT_EMAIL,
     key: GOOGLE_PRIVATE_KEY,
     scopes: ['https://www.googleapis.com/auth/admin.directory.group.readonly'],
-    subject: GOOGLE_WORKSPACE_ADMIN_EMAIL, // Workspace admin
+    subject: GOOGLE_WORKSPACE_ADMIN_EMAIL,
   });
 
   const admin = google.admin({ version: 'directory_v1', auth });

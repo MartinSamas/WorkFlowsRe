@@ -40,7 +40,7 @@ export async function Header() {
       }),
     );
 
-    pendingApprovalsCount = requestsStatus.reduce((acc, curr) => acc + curr, 0);
+    pendingApprovalsCount = requestsStatus.reduce((acc: number, curr) => acc + curr, 0);
     isAdmin = await db.isAdmin(user.email);
   } catch (err) {
     console.error('Error fetching pending notifications count:', err);
