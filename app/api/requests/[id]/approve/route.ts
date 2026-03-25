@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/backend/lib/db';
 import { createHolidayEvent } from '@/backend/lib/google-calendar';
+import { sendRequestResultNotification } from '@/backend/lib/mailer';
 import { authenticateRequest } from '../../../middleware/auth';
 import { approvalDecisionSchema } from '../../../lib/validation';
 import { handleError, NotFoundError, ForbiddenError } from '../../../lib/errors';
@@ -105,6 +106,10 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       } catch (e) {
         console.error('Error creating calendar event:', e);
       }
+    }
+
+    if (requestStatus === 'approved' || requestStatus === 'denied') {
+      sendRequestResultNotification(updatedRequest).catch(console.error);
     }
 
     const result: RequestWithApprovals = {

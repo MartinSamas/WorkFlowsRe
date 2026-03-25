@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/backend/lib/db';
+import { sendNewRequestNotification } from '@/backend/lib/mailer';
 import { authenticateRequest } from '../middleware/auth';
 import { createRequestSchema } from '../lib/validation';
 import { handleError } from '../lib/errors';
@@ -99,6 +100,9 @@ export async function POST(request: Request) {
         responded_at: undefined,
       });
     }
+
+    const approverEmails = approvers.map((a: { email: string }) => a.email);
+    sendNewRequestNotification(newRequest, approverEmails).catch(console.error);
 
     const requestWithApprovals: RequestWithApprovals = {
       ...newRequest,
