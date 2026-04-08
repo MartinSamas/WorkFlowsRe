@@ -1,42 +1,13 @@
-'use client';
-
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { RequestRow } from '@/components/request-row';
-import type { RequestWithApprovals } from '@/app/api/types';
+import { db } from '@/backend/lib/db';
+import { getCurrentUser } from '@/lib/actions';
+import { redirect } from 'next/navigation';
 
-export default function RequestsPage() {
-  const router = useRouter();
-  const [requests, setRequests] = useState<RequestWithApprovals[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export default async function RequestsPage() {
+  const user = await getCurrentUser();
+  if (!user) redirect('/');
 
-  useEffect(() => {
-    fetch('/api/me/requests')
-      .then(async (res) => {
-        if (!res.ok) throw new Error('Failed to load requests');
-        const json = await res.json();
-        setRequests(json.data ?? []);
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <div className="h-8 w-8 rounded-full border-[3px] border-gray-200 border-t-blue-500 animate-spin" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <p className="text-destructive">{error}</p>
-      </div>
-    );
-  }
+  const requests = await db.getAllRequests({ user_email: user.email });
 
   return (
     <div className="space-y-6">
@@ -84,7 +55,7 @@ export default function RequestsPage() {
                     key={request.id}
                     request={request}
                     hideRequestedBy
-                    onClick={() => router.push(`/requests/${request.id}`)}
+                    href={`/requests/${request.id}`}
                   />
                 ))}
               </tbody>

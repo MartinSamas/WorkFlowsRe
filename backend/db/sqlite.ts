@@ -117,11 +117,28 @@ function rowToApprover(row: ApproverRow): Approver {
 
 export class SQLiteAdapter implements DatabaseAdapter {
   private db: Database.Database;
+  private stmtGetRequestById: Database.Statement;
+  private stmtGetRequestByUser: Database.Statement;
+  private stmtDeleteRequest: Database.Statement;
+  private stmtGetApprovalsByRequest: Database.Statement;
+  private stmtGetApprovalsByApprover: Database.Statement;
+  private stmtGetAdmins: Database.Statement;
+  private stmtIsAdmin: Database.Statement;
+  private stmtGetApprovers: Database.Statement;
 
   constructor(dbPath: string) {
     this.db = new Database(dbPath);
     this.db.pragma('journal_mode = WAL');
     this.db.pragma('foreign_keys = ON');
+
+    this.stmtGetRequestById = this.db.prepare('SELECT * FROM requests WHERE id = ?');
+    this.stmtGetRequestByUser = this.db.prepare('SELECT * FROM requests WHERE user_email = ? ORDER BY created_at DESC');
+    this.stmtDeleteRequest = this.db.prepare('DELETE FROM requests WHERE id = ?');
+    this.stmtGetApprovalsByRequest = this.db.prepare('SELECT * FROM approvals WHERE request_id = ? ORDER BY created_at ASC');
+    this.stmtGetApprovalsByApprover = this.db.prepare('SELECT * FROM approvals WHERE approver_email = ? ORDER BY created_at DESC');
+    this.stmtGetAdmins = this.db.prepare('SELECT * FROM admins ORDER BY added_at ASC');
+    this.stmtIsAdmin = this.db.prepare('SELECT id FROM admins WHERE email = ?');
+    this.stmtGetApprovers = this.db.prepare('SELECT * FROM approvers ORDER BY created_at ASC');
   }
 
   async initialize(): Promise<void> {
@@ -156,23 +173,23 @@ export class SQLiteAdapter implements DatabaseAdapter {
       notes: data.notes ?? null,
       admin_notes: data.admin_notes ?? null,
     });
-    const row = this.db.prepare('SELECT * FROM requests WHERE id = ?').get(result.lastInsertRowid) as RequestRow;
+    const row = this.stmtGetRequestById.get(result.lastInsertRowid) as RequestRow;
     return rowToRequest(row);
   }
 
   async getRequestById(id: number): Promise<Request | null> {
-    const row = this.db.prepare('SELECT * FROM requests WHERE id = ?').get(id) as RequestRow | undefined;
+    const row = this.stmtGetRequestById.get(id) as RequestRow | undefined;
     return row ? rowToRequest(row) : null;
   }
 
   async getRequestsByUser(userEmail: string): Promise<Request[]> {
-    const rows = this.db.prepare('SELECT * FROM requests WHERE user_email = ? ORDER BY created_at DESC').all(userEmail) as RequestRow[];
+    const rows = this.stmtGetRequestByUser.all(userEmail) as RequestRow[];
     return rows.map(rowToRequest);
   }
 
   async getAllRequests(filters?: RequestFilters): Promise<Request[]> {
     let query = 'SELECT * FROM requests WHERE 1=1';
-    const params: (string | null)[] = [];
+    const params: (string | number | null)[] = [];
 
     if (filters?.status) {
       query += ' AND status = ?';
@@ -196,6 +213,16 @@ export class SQLiteAdapter implements DatabaseAdapter {
     }
 
     query += ' ORDER BY created_at DESC';
+
+    if (filters?.limit !== undefined) {
+      query += ' LIMIT ?';
+      params.push(filters.limit);
+      if (filters?.offset !== undefined) {
+        query += ' OFFSET ?';
+        params.push(filters.offset);
+      }
+    }
+
     const rows = this.db.prepare(query).all(...params) as RequestRow[];
     return rows.map(rowToRequest);
   }
@@ -231,7 +258,7 @@ export class SQLiteAdapter implements DatabaseAdapter {
   }
 
   async deleteRequest(id: number): Promise<void> {
-    this.db.prepare('DELETE FROM requests WHERE id = ?').run(id);
+    this.stmtDeleteRequest.run(id);
   }
 
   async createApproval(data: Omit<Approval, 'id' | 'created_at'>): Promise<Approval> {
@@ -253,12 +280,20 @@ export class SQLiteAdapter implements DatabaseAdapter {
   }
 
   async getApprovalsByRequest(requestId: number): Promise<Approval[]> {
-    const rows = this.db.prepare('SELECT * FROM approvals WHERE request_id = ? ORDER BY created_at ASC').all(requestId) as ApprovalRow[];
+    const rows = this.stmtGetApprovalsByRequest.all(requestId) as ApprovalRow[];
+    return rows.map(rowToApproval);
+  }
+
+  async getApprovalsByRequests(requestIds: number[]): Promise<Approval[]> {
+    if (requestIds.length === 0) return [];
+    const placeholders = requestIds.map(() => '?').join(',');
+    const query = `SELECT * FROM approvals WHERE request_id IN (${placeholders}) ORDER BY created_at ASC`;
+    const rows = this.db.prepare(query).all(...requestIds) as ApprovalRow[];
     return rows.map(rowToApproval);
   }
 
   async getApprovalsByApprover(approverEmail: string): Promise<Approval[]> {
-    const rows = this.db.prepare('SELECT * FROM approvals WHERE approver_email = ? ORDER BY created_at DESC').all(approverEmail) as ApprovalRow[];
+    const rows = this.stmtGetApprovalsByApprover.all(approverEmail) as ApprovalRow[];
     return rows.map(rowToApproval);
   }
 
@@ -288,7 +323,7 @@ export class SQLiteAdapter implements DatabaseAdapter {
   }
 
   async getAdmins(): Promise<Admin[]> {
-    const rows = this.db.prepare('SELECT * FROM admins ORDER BY added_at ASC').all() as AdminRow[];
+    const rows = this.stmtGetAdmins.all() as AdminRow[];
     return rows.map(rowToAdmin);
   }
 
@@ -303,12 +338,12 @@ export class SQLiteAdapter implements DatabaseAdapter {
   }
 
   async isAdmin(email: string): Promise<boolean> {
-    const row = this.db.prepare('SELECT id FROM admins WHERE email = ?').get(email);
+    const row = this.stmtIsAdmin.get(email);
     return row !== undefined;
   }
 
   async getApprovers(): Promise<Approver[]> {
-    const rows = this.db.prepare('SELECT * FROM approvers ORDER BY created_at ASC').all() as ApproverRow[];
+    const rows = this.stmtGetApprovers.all() as ApproverRow[];
     return rows.map(rowToApprover);
   }
 

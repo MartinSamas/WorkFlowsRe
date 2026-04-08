@@ -1,5 +1,8 @@
+"use client";
+
 import { StatusBadge } from './status-badge';
 import { formatDateRange, countDays, relativeTime } from '@/lib/date-utils';
+import { useRouter } from 'next/navigation';
 
 interface RequestRowProps {
   request: {
@@ -12,28 +15,38 @@ interface RequestRowProps {
     created_at: Date | string;
     user_name?: string;
   };
-  onClick: () => void;
+  onClick?: () => void;
+  href?: string;
   showActions?: boolean;
   hideRequestedBy?: boolean;
   onApprove?: () => void;
   onDeny?: () => void;
 }
 
-export function RequestRow({ request, onClick, showActions, hideRequestedBy, onApprove, onDeny }: RequestRowProps) {
+export function RequestRow({ request, onClick, href, showActions, hideRequestedBy, onApprove, onDeny }: RequestRowProps) {
+  const router = useRouter();
   const days = countDays(request.start_date, request.end_date);
   const dateRange = formatDateRange(request.start_date, request.end_date);
   const notesPreview = request.notes ? request.notes.slice(0, 60) : null;
 
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
+    } else if (href) {
+      router.push(href);
+    }
+  };
+
   return (
     <tr
       className="border-b cursor-pointer hover:bg-muted/50 transition-colors"
-      onClick={onClick}
+      onClick={handleClick}
       role="row"
       tabIndex={0}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          onClick();
+          handleClick();
         }
       }}
     >

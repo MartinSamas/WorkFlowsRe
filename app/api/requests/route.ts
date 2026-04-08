@@ -27,6 +27,11 @@ export async function GET(request: Request) {
     if (startDate) filters.start_date_from = new Date(startDate);
     if (endDate) filters.start_date_to = new Date(endDate);
 
+    const offsetNum = offset ? parseInt(offset, 10) : 0;
+    const limitNum = limit ? parseInt(limit, 10) : undefined;
+    filters.offset = offsetNum;
+    filters.limit = limitNum;
+
     // Admins (those with query param userEmail) can filter by user; otherwise only own requests
     const isAdmin = user.email.endsWith('@admin.com');
     if (isAdmin && userEmail) {
@@ -37,18 +42,20 @@ export async function GET(request: Request) {
 
     let requests = await db.getAllRequests(filters);
 
-    // Apply pagination
-    const offsetNum = offset ? parseInt(offset, 10) : 0;
-    const limitNum = limit ? parseInt(limit, 10) : undefined;
-    if (offsetNum > 0) requests = requests.slice(offsetNum);
-    if (limitNum !== undefined) requests = requests.slice(0, limitNum);
+    const requestIds = requests.map((r) => r.id);
+    const allApprovals = await db.getApprovalsByRequests(requestIds);
+    const approvalsByRequestId = new Map<number, typeof allApprovals>();
+    for (const approval of allApprovals) {
+      if (!approvalsByRequestId.has(approval.request_id)) {
+        approvalsByRequestId.set(approval.request_id, []);
+      }
+      approvalsByRequestId.get(approval.request_id)!.push(approval);
+    }
 
-    const requestsWithApprovals: RequestWithApprovals[] = await Promise.all(
-      requests.map(async (req) => ({
-        ...req,
-        approvals: await db.getApprovalsByRequest(req.id),
-      })),
-    );
+    const requestsWithApprovals: RequestWithApprovals[] = requests.map((req) => ({
+      ...req,
+      approvals: approvalsByRequestId.get(req.id) || [],
+    }));
 
     return NextResponse.json({ data: requestsWithApprovals });
   } catch (error) {

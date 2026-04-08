@@ -43,6 +43,9 @@ export function ApprovalStatusList({ approvals, currentUserEmail }: ApprovalStat
                   {isCurrentUser ? 'You' : (approval.approver_name ?? approval.approver_email)}
                   {isCurrentUser && approval.approver_name ? ` (${approval.approver_name})` : ''}
                 </span>
+                {approval.approver_name && (
+                  <span className="text-xs text-muted-foreground">({approval.approver_email})</span>
+                )}
                 {approval.approver_role && (
                   <span className="text-xs text-muted-foreground">· {approval.approver_role}</span>
                 )}

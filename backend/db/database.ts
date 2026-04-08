@@ -32,6 +32,8 @@ export interface RequestFilters {
   request_type?: string;
   start_date_from?: Date;
   start_date_to?: Date;
+  limit?: number;
+  offset?: number;
 }
 
 export interface Admin {
@@ -63,6 +65,7 @@ export interface DatabaseAdapter {
   // Approval operations
   createApproval(data: Omit<Approval, 'id' | 'created_at'>): Promise<Approval>;
   getApprovalsByRequest(requestId: number): Promise<Approval[]>;
+  getApprovalsByRequests(requestIds: number[]): Promise<Approval[]>;
   getApprovalsByApprover(approverEmail: string): Promise<Approval[]>;
   updateApproval(id: number, data: Partial<Approval>): Promise<Approval>;
 

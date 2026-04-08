@@ -5,6 +5,7 @@ import {redirect} from "next/navigation"
 import * as jose from "jose"
 import {JWT_SECRET} from "./constants"
 import {revalidatePath} from "next/cache"
+import {cache} from "react"
 
 // Type for the user
 export type User = {
@@ -16,7 +17,7 @@ export type User = {
 }
 
 // Server action to get the current user
-export async function getCurrentUser(): Promise<User | null> {
+export const getCurrentUser = cache(async function getCurrentUser(): Promise<User | null> {
     try {
         const cookieStore = await cookies();
         const token = cookieStore.get("auth-token")?.value;
@@ -32,13 +33,18 @@ export async function getCurrentUser(): Promise<User | null> {
             cookieStore.delete("auth-token")
             return null
         }
-    } catch (error) {
+    } catch (error: any) {
+        if (error.digest === "DYNAMIC_SERVER_USAGE") {
+            throw error;
+        }
         console.error("Error getting current user:", error)
-        const cookieStore = await cookies()
-        cookieStore.delete("auth-token")
+        try {
+            const cookieStore = await cookies()
+            cookieStore.delete("auth-token")
+        } catch(e) {}
         return null
     }
-}
+});
 
 // Server action to log out
 export async function logoutAction() {
