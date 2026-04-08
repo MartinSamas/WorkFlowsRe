@@ -60,7 +60,7 @@ export async function Header() {
               unoptimized
             />
             <span className="flex flex-col leading-tight">
-              <span className="font-bold text-xl leading-[20px]">WorkFlows</span>
+              <span className="font-bold text-xl leading-[20px]">Workflows</span>
               <small className="text-[#cccccc]">by ui42</small>
             </span>
           </a>

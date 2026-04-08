@@ -29,3 +29,6 @@ next-env.d.ts
 # database
 backend/data/*.db
 backend/data/*.db-*
+
+# copilot
+AGENTS.md
