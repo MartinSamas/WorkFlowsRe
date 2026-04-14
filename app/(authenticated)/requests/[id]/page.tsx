@@ -78,95 +78,101 @@ export default function RequestDetailPage({ params }: { params: Promise<{ id: st
   const dateRange = formatDateRange(request.start_date, request.end_date);
 
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="flex flex-col flex-1 space-y-6 max-w-5xl mx-auto w-full">
       {/* Back button */}
-      <Button variant="ghost" size="sm" onClick={() => router.push('/requests')}>
-        <ArrowLeft absoluteStrokeWidth={true} strokeWidth={1} /> Back to Requests
-      </Button>
-
-      {/* Header card */}
-      <div className="rounded-lg border bg-card p-6 space-y-4">
-        <div className="flex items-start justify-between gap-4 flex-wrap">
-          <div>
-            <h1 className="text-xl font-bold capitalize">{request.request_type.replace(/_/g, ' ')}</h1>
-            <p className="text-muted-foreground text-sm mt-1">{dateRange}</p>
-          </div>
-          <StatusBadge status={request.status} size="md" />
-        </div>
-
-        {/* User info */}
-        {(request.user_name || request.user_picture) && (
-          <div className="flex items-center gap-3">
-            {request.user_picture ? (
-              <div className="relative h-8 w-8 overflow-hidden rounded-full bg-gray-200">
-                <Image
-                  src={request.user_picture}
-                  alt={request.user_name ?? 'User'}
-                  fill
-                  className="object-cover"
-                  sizes="32px"
-                />
-              </div>
-            ) : null}
-            <span className="text-sm font-medium">{request.user_name}</span>
-          </div>
-        )}
-
-        {/* Details grid */}
-        <div className="grid grid-cols-2 gap-4 text-sm">
-          <div>
-            <p className="text-muted-foreground">Start date</p>
-            <p className="font-medium">{formatDate(request.start_date)}</p>
-          </div>
-          <div>
-            <p className="text-muted-foreground">End date</p>
-            <p className="font-medium">{formatDate(request.end_date)}</p>
-          </div>
-          <div>
-            <p className="text-muted-foreground">Duration</p>
-            <p className="font-medium">{days} {days === 1 ? 'day' : 'days'}</p>
-          </div>
-          <div>
-            <p className="text-muted-foreground">Submitted</p>
-            <p className="font-medium">{relativeTime(request.created_at)}</p>
-          </div>
-        </div>
-
-        {/* Notes */}
-        {request.notes && (
-          <div>
-            <p className="text-muted-foreground text-sm mb-1">Notes</p>
-            <p className="text-sm whitespace-pre-line">{request.notes}</p>
-          </div>
-        )}
-
-        {/* Admin notes */}
-        {request.admin_notes && (
-          <div className="rounded-md bg-muted p-3">
-            <p className="text-muted-foreground text-xs font-semibold mb-1">Admin Notes</p>
-            <p className="text-sm whitespace-pre-line">{request.admin_notes}</p>
-          </div>
-        )}
+      <div>
+        <Button variant="ghost" size="sm" onClick={() => router.push('/requests')}>
+          <ArrowLeft absoluteStrokeWidth={true} strokeWidth={1} /> Back to Requests
+        </Button>
       </div>
 
-      {/* Approvals */}
-      <div className="rounded-lg border bg-card p-6 space-y-4">
-        <h2 className="font-semibold">Approvals</h2>
-        <ApprovalStatusList approvals={request.approvals} />
-      </div>
+      <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+        {/* Header card */}
+        <div className="rounded-lg border bg-card p-6 space-y-4">
+          <div className="flex items-start justify-between gap-4 flex-wrap">
+            <div>
+              <h1 className="text-xl font-bold capitalize">{request.request_type.replace(/_/g, ' ')}</h1>
+              <p className="text-muted-foreground text-sm mt-1">{dateRange}</p>
+            </div>
+            <StatusBadge status={request.status} size="md" />
+          </div>
 
-      {/* Actions */}
-      {request.status === 'pending' && (
-        <div>
-          <Button
-            variant="destructive"
-            onClick={handleCancel}
-            disabled={cancelling}
-          >
-            {cancelling ? 'Cancelling…' : 'Cancel Request'}
-          </Button>
+          {/* User info */}
+          {(request.user_name || request.user_picture) && (
+            <div className="flex items-center gap-3">
+              {request.user_picture ? (
+                <div className="relative h-8 w-8 overflow-hidden rounded-full bg-gray-200">
+                  <Image
+                    src={request.user_picture}
+                    alt={request.user_name ?? 'User'}
+                    fill
+                    className="object-cover"
+                    sizes="32px"
+                  />
+                </div>
+              ) : null}
+              <span className="text-sm font-medium">{request.user_name}</span>
+            </div>
+          )}
+
+          {/* Details grid */}
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <p className="text-muted-foreground">Start date</p>
+              <p className="font-medium">{formatDate(request.start_date)}</p>
+            </div>
+            <div>
+              <p className="text-muted-foreground">End date</p>
+              <p className="font-medium">{formatDate(request.end_date)}</p>
+            </div>
+            <div>
+              <p className="text-muted-foreground">Duration</p>
+              <p className="font-medium">{days} {days === 1 ? 'day' : 'days'}</p>
+            </div>
+            <div>
+              <p className="text-muted-foreground">Submitted</p>
+              <p className="font-medium">{relativeTime(request.created_at)}</p>
+            </div>
+          </div>
+
+          {/* Notes */}
+          {request.notes && (
+            <div>
+              <p className="text-muted-foreground text-sm mb-1">Notes</p>
+              <p className="text-sm whitespace-pre-line">{request.notes}</p>
+            </div>
+          )}
+
+          {/* Admin notes */}
+          {request.admin_notes && (
+            <div className="rounded-md bg-muted p-3">
+              <p className="text-muted-foreground text-xs font-semibold mb-1">Admin Notes</p>
+              <p className="text-sm whitespace-pre-line">{request.admin_notes}</p>
+            </div>
+          )}
         </div>
-      )}
+
+        <div className="space-y-6 flex flex-col">
+          {/* Approvals */}
+          <div className="rounded-lg border bg-card p-6 space-y-4 flex-1">
+            <h2 className="font-semibold">Approvals</h2>
+            <ApprovalStatusList approvals={request.approvals} />
+          </div>
+
+          {/* Actions */}
+          {request.status === 'pending' && (
+            <div>
+              <Button
+                variant="destructive"
+                onClick={handleCancel}
+                disabled={cancelling}
+              >
+                {cancelling ? 'Cancelling…' : 'Cancel Request'}
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

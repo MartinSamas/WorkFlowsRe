@@ -21,8 +21,8 @@ export default async function AuthenticatedLayout({
         <div className="shrink-0 hidden sm:block sticky top-[96px] h-[calc(100vh-120px)] overflow-y-auto scrollbar-hide">
           <Sidebar className="border-none h-full" />
         </div>
-        <main className="flex-1 min-w-0">
-          <div className="bg-white rounded-[20px] shadow-[0px_8px_24px_#DCDEED] border border-gray-200/60 min-h-[calc(100vh-120px)] p-8">
+        <main className="flex-1 min-w-0 flex flex-col">
+          <div className="flex-1 bg-white rounded-[20px] shadow-[0px_8px_24px_#DCDEED] border border-gray-200/60 p-8 flex flex-col">
             {children}
           </div>
         </main>
