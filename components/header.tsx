@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { getCurrentUser } from '@/lib/actions';
 import { LogoutButton } from '@/components/logout-button';
 import { db } from '@/backend/lib/db';
+import { MobileNav } from '@/components/mobile-nav';
 
 export async function Header() {
   const user = await getCurrentUser();
@@ -50,6 +51,7 @@ export async function Header() {
     <header className="fixed top-0 left-0 right-0 z-50 w-full bg-black">
       <div className="flex items-center justify-between px-8 h-[72px]">
         <div className="flex items-center gap-2">
+          <MobileNav pendingApprovalsCount={pendingApprovalsCount} isAdmin={isAdmin} />
           <a href="/requests" className="site-logo flex items-center gap-2 text-white no-underline">
             <Image
               src="https://taskman.ui42.sk/images/taskman-logo.svg"
