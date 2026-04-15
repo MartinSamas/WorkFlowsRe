@@ -1,49 +1,10 @@
-import Link from 'next/link';
-import { getCurrentUser } from '@/lib/actions';
-import { db } from '@/backend/lib/db';
+import {getUserData} from '@/lib/actions';
 import { NewRequestDialog } from '@/components/new-request-dialog';
 import { SidebarLinks } from '@/components/sidebar-links';
 
 export async function Sidebar({ className }: { className?: string }) {
-  const user = await getCurrentUser();
+  const { user, pendingApprovalsCount, isAdmin } = await getUserData();
   if (!user) return null;
-
-  let pendingApprovalsCount = 0;
-  let isAdmin = false;
-
-  try {
-    const allApprovers = await db.getApprovers();
-    const groupsUserBelongsTo = allApprovers
-      .filter(
-        (a) =>
-          a.type === 'group' &&
-          a.group_emails?.some((e) => e.toLowerCase() === user.email.toLowerCase()),
-      )
-      .map((g) => g.email);
-
-    const directApprovals = await db.getApprovalsByApprover(user.email);
-    const groupApprovals = (
-      await Promise.all(groupsUserBelongsTo.map((ge) => db.getApprovalsByApprover(ge)))
-    ).flat();
-
-    const approvalMap = new Map();
-    [...directApprovals, ...groupApprovals].forEach((a) => {
-      if (a.status === 'pending') approvalMap.set(a.id, a);
-    });
-
-    const pendingApprovals = Array.from(approvalMap.values());
-    const requestsStatus = await Promise.all(
-      pendingApprovals.map(async (approval) => {
-        const req = await db.getRequestById(approval.request_id);
-        return req?.status === 'pending' ? 1 : 0;
-      }),
-    );
-
-    pendingApprovalsCount = requestsStatus.reduce((acc: number, curr) => acc + curr, 0);
-    isAdmin = await db.isAdmin(user.email);
-  } catch {
-    // silently fallback
-  }
 
   return (
     <aside

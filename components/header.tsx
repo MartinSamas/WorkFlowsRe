@@ -1,51 +1,11 @@
 import Image from 'next/image';
-import { getCurrentUser } from '@/lib/actions';
+import { getUserData } from '@/lib/actions';
 import { LogoutButton } from '@/components/logout-button';
-import { db } from '@/backend/lib/db';
 import { MobileNav } from '@/components/mobile-nav';
 
 export async function Header() {
-  const user = await getCurrentUser();
-
+  const { user, pendingApprovalsCount, isAdmin } = await getUserData();
   if (!user) return null;
-
-  let pendingApprovalsCount = 0;
-  let isAdmin = false;
-  try {
-    const allApprovers = await db.getApprovers();
-    const groupsUserBelongsTo = allApprovers
-      .filter(
-        (a) =>
-          a.type === 'group' &&
-          a.group_emails?.some((e) => e.toLowerCase() === user.email.toLowerCase()),
-      )
-      .map((g) => g.email);
-
-    const directApprovals = await db.getApprovalsByApprover(user.email);
-    const groupApprovals = (
-      await Promise.all(groupsUserBelongsTo.map((ge) => db.getApprovalsByApprover(ge)))
-    ).flat();
-
-    const approvalMap = new Map();
-    [...directApprovals, ...groupApprovals].forEach((a) => {
-      if (a.status === 'pending') {
-        approvalMap.set(a.id, a);
-      }
-    });
-
-    const pendingApprovals = Array.from(approvalMap.values());
-    const requestsStatus = await Promise.all(
-      pendingApprovals.map(async (approval) => {
-        const req = await db.getRequestById(approval.request_id);
-        return req?.status === 'pending' ? 1 : 0;
-      }),
-    );
-
-    pendingApprovalsCount = requestsStatus.reduce((acc: number, curr) => acc + curr, 0);
-    isAdmin = await db.isAdmin(user.email);
-  } catch (err) {
-    console.error('Error fetching pending notifications count:', err);
-  }
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 w-full bg-black">

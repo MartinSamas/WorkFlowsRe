@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { SidebarLinks } from '@/components/sidebar-links';
 import { NewRequestDialog } from '@/components/new-request-dialog';
-import { Menu } from 'lucide-react';
 
 export function MobileNav({
   pendingApprovalsCount,

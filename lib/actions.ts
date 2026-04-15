@@ -6,6 +6,7 @@ import * as jose from "jose"
 import {JWT_SECRET} from "./constants"
 import {revalidatePath} from "next/cache"
 import {cache} from "react"
+import { db } from '@/backend/lib/db';
 
 // Type for the user
 export type User = {
@@ -53,3 +54,47 @@ export async function logoutAction() {
     revalidatePath("/")
     redirect("/")
 }
+
+
+export const getUserData = cache(async () => {
+    const user = await getCurrentUser();
+    if (!user) return { user: null, pendingApprovalsCount: 0, isAdmin: false };
+
+    try {
+        const allApprovers = await db.getApprovers();
+        const groupsUserBelongsTo = allApprovers
+            .filter(
+                (a) =>
+                    a.type === 'group' &&
+                    a.group_emails?.some((e) => e.toLowerCase() === user.email.toLowerCase()),
+            )
+            .map((g) => g.email);
+
+        const directApprovals = await db.getApprovalsByApprover(user.email);
+        const groupApprovals = (
+            await Promise.all(groupsUserBelongsTo.map((ge) => db.getApprovalsByApprover(ge)))
+        ).flat();
+
+        const approvalMap = new Map();
+        [...directApprovals, ...groupApprovals].forEach((a) => {
+            if (a.status === 'pending') approvalMap.set(a.id, a);
+        });
+
+        const pendingApprovals = Array.from(approvalMap.values());
+        const requestsStatus = await Promise.all(
+            pendingApprovals.map(async (approval) => {
+                const req = await db.getRequestById(approval.request_id);
+                return req?.status === 'pending' ? 1 : 0;
+            }),
+        );
+
+        const pendingApprovalsCount = requestsStatus.reduce((acc: number, curr) => acc + curr, 0);
+        const isAdmin = await db.isAdmin(user.email);
+
+        return { user, pendingApprovalsCount, isAdmin };
+    } catch (err) {
+        console.error('Error fetching header data:', err);
+        return { user, pendingApprovalsCount: 0, isAdmin: false };
+    }
+});
+
