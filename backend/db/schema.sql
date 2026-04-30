@@ -48,6 +48,12 @@ CREATE TABLE IF NOT EXISTS approvers (
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS settings (
+  key TEXT PRIMARY KEY,
+  value TEXT NOT NULL,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE INDEX IF NOT EXISTS idx_requests_user_email_status ON requests(user_email, status);
 CREATE INDEX IF NOT EXISTS idx_requests_status_created_at ON requests(status, created_at);
 CREATE INDEX IF NOT EXISTS idx_approvals_request_id ON approvals(request_id);

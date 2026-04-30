@@ -1,4 +1,5 @@
 import {format, formatDistanceToNow, differenceInDays, isWeekend, addDays} from 'date-fns';
+import Holidays from 'date-holidays';
 
 export function formatDate(date: Date | string): string {
     const d = typeof date === 'string' ? new Date(date) : date;
@@ -22,10 +23,11 @@ export function countWorkdays(startDate: Date | string, endDate: Date | string):
     const start = typeof startDate === 'string' ? new Date(startDate) : startDate;
     const end = typeof endDate === 'string' ? new Date(endDate) : endDate;
 
+    const hd = new Holidays('SK');
     let count = 0;
     let current = new Date(start);
     while (current <= end) {
-        if (!isWeekend(current)) {
+        if (!isWeekend(current) && !hd.isHoliday(current)) {
             count++;
         }
         current = addDays(current, 1);

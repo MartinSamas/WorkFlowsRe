@@ -125,6 +125,8 @@ export class SQLiteAdapter implements DatabaseAdapter {
   private stmtGetAdmins: Database.Statement;
   private stmtIsAdmin: Database.Statement;
   private stmtGetApprovers: Database.Statement;
+  private stmtGetSetting: Database.Statement;
+  private stmtSetSetting: Database.Statement;
 
   constructor(dbPath: string) {
     this.db = new Database(dbPath);
@@ -139,6 +141,8 @@ export class SQLiteAdapter implements DatabaseAdapter {
     this.stmtGetAdmins = this.db.prepare('SELECT * FROM admins ORDER BY added_at ASC');
     this.stmtIsAdmin = this.db.prepare('SELECT id FROM admins WHERE email = ?');
     this.stmtGetApprovers = this.db.prepare('SELECT * FROM approvers ORDER BY created_at ASC');
+    this.stmtGetSetting = this.db.prepare('SELECT value FROM settings WHERE key = ?');
+    this.stmtSetSetting = this.db.prepare('INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP)');
   }
 
   async initialize(): Promise<void> {
@@ -365,5 +369,14 @@ export class SQLiteAdapter implements DatabaseAdapter {
 
   async removeApprover(id: number): Promise<void> {
     this.db.prepare('DELETE FROM approvers WHERE id = ?').run(id);
+  }
+
+  async getSetting(key: string): Promise<string | null> {
+    const row = this.stmtGetSetting.get(key) as { value: string } | undefined;
+    return row ? row.value : null;
+  }
+
+  async setSetting(key: string, value: string): Promise<void> {
+    this.stmtSetSetting.run(key, value);
   }
 }

@@ -11,17 +11,18 @@ export default async function DashboardPage() {
   if (!isAdmin) redirect('/requests');
 
   const approvers = await db.getApprovers();
+  const autoApproveDays = await db.getSetting('auto_approve_days');
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Dashboard</h1>
         <p className="text-muted-foreground mt-1">
-          Manage the approvers that users can assign to their requests.
+          Manage the approvers that users can assign to their requests and system settings.
         </p>
       </div>
 
-      <DashboardClient initialApprovers={approvers} />
+      <DashboardClient initialApprovers={approvers} initialSettings={{ autoApproveDays }} />
     </div>
   );
 }

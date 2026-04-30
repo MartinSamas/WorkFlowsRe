@@ -80,6 +80,10 @@ export interface DatabaseAdapter {
   addApprover(data: Omit<Approver, 'id' | 'created_at'>): Promise<Approver>;
   removeApprover(id: number): Promise<void>;
 
+  // Settings operations
+  getSetting(key: string): Promise<string | null>;
+  setSetting(key: string, value: string): Promise<void>;
+
   // Utility operations
   initialize(): Promise<void>;
   close(): Promise<void>;
