@@ -44,10 +44,10 @@ export function ApproverList({ approvers, onRemove }: ApproverListProps) {
             <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground">
               Name
             </th>
-            <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground">
+            <th className="hidden sm:table-cell px-4 py-3 text-left text-xs font-semibold text-muted-foreground">
               Email
             </th>
-            <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground">
+            <th className="hidden md:table-cell px-4 py-3 text-left text-xs font-semibold text-muted-foreground">
               Role / Members
             </th>
             <th className="px-4 py-3 text-right text-xs font-semibold text-muted-foreground">
@@ -72,8 +72,8 @@ export function ApproverList({ approvers, onRemove }: ApproverListProps) {
                 )}
               </td>
               <td className="px-4 py-3 font-medium">{approver.name}</td>
-              <td className="px-4 py-3 text-muted-foreground">{approver.email}</td>
-              <td className="px-4 py-3 text-muted-foreground">
+              <td className="hidden sm:table-cell px-4 py-3 text-muted-foreground">{approver.email}</td>
+              <td className="hidden md:table-cell px-4 py-3 text-muted-foreground">
                 {approver.type === 'group' ? (
                   <span className="text-xs">
                     {approver.group_emails?.length ?? 0} member

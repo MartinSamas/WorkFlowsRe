@@ -59,8 +59,8 @@ export function RequestRow({ request, onClick, href, showActions, hideRequestedB
         </td>
       )}
       <td className="px-4 py-3 text-sm whitespace-nowrap">{dateRange}</td>
-      <td className="px-4 py-3 text-sm capitalize">{request.request_type.replace(/_/g, ' ')}</td>
-      <td className="px-4 py-3 text-sm text-center">{days}</td>
+      <td className="hidden sm:table-cell px-4 py-3 text-sm capitalize">{request.request_type.replace(/_/g, ' ')}</td>
+      <td className="hidden sm:table-cell px-4 py-3 text-sm text-center">{days}</td>
       <td className="px-4 py-3 text-sm text-muted-foreground max-w-[200px]">
         {notesPreview ? (
           <span className="line-clamp-1">{notesPreview}</span>
@@ -68,7 +68,7 @@ export function RequestRow({ request, onClick, href, showActions, hideRequestedB
           <span className="italic">—</span>
         )}
       </td>
-      <td className="px-4 py-3 text-sm text-muted-foreground whitespace-nowrap">
+      <td className="hidden lg:table-cell px-4 py-3 text-sm text-muted-foreground whitespace-nowrap">
         {relativeTime(request.created_at)}
       </td>
       {showActions && (

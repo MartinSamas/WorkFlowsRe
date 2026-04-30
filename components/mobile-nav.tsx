@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { SidebarLinks } from '@/components/sidebar-links';
 import { NewRequestDialog } from '@/components/new-request-dialog';
 
@@ -28,6 +28,10 @@ export function MobileNav({
         </button>
       </SheetTrigger>
       <SheetContent side="left" className="p-0 w-[280px] bg-white">
+        <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+        <SheetDescription className="sr-only">
+          Mobile navigation menu for WorkFlowsRe.
+        </SheetDescription>
         <div className="flex flex-col h-full">
           {/* Logo / Header inside the sheet */}
           <div className="flex items-center gap-3 px-4 pt-5 pb-4 border-b">

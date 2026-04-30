@@ -17,12 +17,12 @@ export default async function AuthenticatedLayout({
   return (
     <div className="min-h-screen flex flex-col bg-background pt-[72px]">
       <Header />
-      <div className="flex flex-1 w-full relative pt-6 pr-8 pb-6 pl-6">
+      <div className="flex flex-1 w-full relative py-6 px-3 sm:pr-8 sm:pl-6">
         <div className="shrink-0 hidden sm:block sticky top-[96px] h-[calc(100vh-120px)] overflow-y-auto scrollbar-hide">
           <Sidebar className="border-none h-full" />
         </div>
         <main className="flex-1 min-w-0 flex flex-col">
-          <div className="flex-1 bg-white rounded-[20px] shadow-[0px_8px_24px_#DCDEED] border border-gray-200/60 p-8 flex flex-col">
+          <div className="flex-1 bg-white rounded-[20px] shadow-[0px_8px_24px_#DCDEED] border border-gray-200/60 p-4 sm:p-8 flex flex-col">
             {children}
           </div>
         </main>

@@ -134,16 +134,16 @@ export default function ApprovalsPage() {
                       <th className="px-4 py-3 text-xs font-semibold text-gray-500">
                         Dates
                       </th>
-                      <th className="px-4 py-3 text-xs font-semibold text-gray-500">
+                      <th className="hidden sm:table-cell px-4 py-3 text-xs font-semibold text-gray-500">
                         Type
                       </th>
-                      <th className="px-4 py-3 text-xs font-semibold text-gray-500 text-center">
+                      <th className="hidden sm:table-cell px-4 py-3 text-xs font-semibold text-gray-500 text-center">
                         Days
                       </th>
                       <th className="px-4 py-3 text-xs font-semibold text-gray-500">
                         Notes
                       </th>
-                      <th className="px-4 py-3 text-xs font-semibold text-gray-500">
+                      <th className="hidden lg:table-cell px-4 py-3 text-xs font-semibold text-gray-500">
                         Created
                       </th>
                       <th className="px-4 py-3 text-xs font-semibold text-gray-500">
