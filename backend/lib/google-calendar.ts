@@ -2,7 +2,7 @@ import { google } from 'googleapis';
 import type { Request } from '../db/database';
 
 const GOOGLE_SERVICE_ACCOUNT_EMAIL = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
-const GOOGLE_PRIVATE_KEY = process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n');
+const GOOGLE_PRIVATE_KEY = process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n').replace(/^"|"$/g, '');
 const GOOGLE_WORKSPACE_ADMIN_EMAIL = process.env.GOOGLE_WORKSPACE_ADMIN_EMAIL;
 const GOOGLE_CALENDAR_ID = process.env.GOOGLE_CALENDAR_ID;
 
@@ -28,7 +28,7 @@ export async function createHolidayEvent(request: Request): Promise<void> {
   endDate.setDate(endDate.getDate() + 1);
   const endDateStr = endDate.toISOString().split('T')[0];
 
-  const summary = `${request.request_type}: ${request.user_name || request.user_email}`;
+  const summary = `${request.request_type} ${request.user_name || request.user_email}`;
   const description = request.notes ? request.notes : '';
 
   try {

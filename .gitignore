@@ -18,9 +18,6 @@ yarn-error.log*
 # env files
 .env*
 
-# vercel
-.vercel
-
 # typescript
 *.tsbuildinfo
 next-env.d.ts
@@ -32,3 +29,6 @@ backend/data/*.db-*
 
 # copilot
 AGENTS.md
+
+# IDE
+/.idea
