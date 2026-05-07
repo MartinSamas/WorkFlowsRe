@@ -12,17 +12,11 @@ import {
 import { Button } from '@/components/ui/button';
 import type { Approver } from '@/backend/db/database';
 
-const REQUEST_TYPES = [
-  { value: 'vacation', label: 'Vacation' },
-  { value: 'sick_leave', label: 'Sick Leave' },
-  { value: 'personal', label: 'Personal' },
-];
-
 export function NewRequestDialog() {
   const [open, setOpen] = useState(false);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [requestType, setRequestType] = useState('vacation');
+  const [requestType, setRequestType] = useState('Dovolenka');
   const [notes, setNotes] = useState('');
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [submitting, setSubmitting] = useState(false);
@@ -49,7 +43,7 @@ export function NewRequestDialog() {
   function resetForm() {
     setStartDate('');
     setEndDate('');
-    setRequestType('vacation');
+    setRequestType('Dovolenka');
     setNotes('');
     setSelectedIds([]);
     setError(null);
@@ -190,18 +184,15 @@ export function NewRequestDialog() {
               <label className="text-sm font-medium" htmlFor="request-type">
                 Type
               </label>
-              <select
+              <input
                 id="request-type"
+                type="text"
+                required
                 value={requestType}
                 onChange={(e) => setRequestType(e.target.value)}
-                className="w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-              >
-                {REQUEST_TYPES.map((t) => (
-                  <option key={t.value} value={t.value}>
-                    {t.label}
-                  </option>
-                ))}
-              </select>
+                placeholder="e.g., Vacation, Sick Leave, Personal"
+                className="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              />
             </div>
 
             <div className="space-y-1">

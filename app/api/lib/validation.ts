@@ -4,7 +4,7 @@ export const createRequestSchema = z
   .object({
     start_date: z.string().datetime(),
     end_date: z.string().datetime(),
-    request_type: z.string().optional().default('vacation'),
+    request_type: z.string().optional().default('Dovolenka'),
     notes: z.string().optional(),
     approvers: z
       .array(

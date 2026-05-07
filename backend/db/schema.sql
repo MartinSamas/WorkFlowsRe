@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS requests (
   request_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   start_date DATE NOT NULL,
   end_date DATE NOT NULL,
-  request_type TEXT DEFAULT 'vacation',
+  request_type TEXT DEFAULT 'Dovolenka',
   status TEXT DEFAULT 'pending',
   notes TEXT,
   admin_notes TEXT,

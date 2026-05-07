@@ -28,8 +28,8 @@ export async function createHolidayEvent(request: Request): Promise<void> {
   endDate.setDate(endDate.getDate() + 1);
   const endDateStr = endDate.toISOString().split('T')[0];
 
-  const summary = `OOO / ${request.request_type}: ${request.user_name || request.user_email}`;
-  const description = request.notes ? `Notes: ${request.notes}` : '';
+  const summary = `${request.request_type}: ${request.user_name || request.user_email}`;
+  const description = request.notes ? request.notes : '';
 
   try {
     await calendar.events.insert({
