@@ -36,6 +36,12 @@ CREATE TABLE IF NOT EXISTS admins (
   added_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Seed default admins
+INSERT OR IGNORE INTO admins (email) VALUES
+                                         ('radoslav.kuchar@ui42.com'),
+                                         ('martin.samas@ui42.com'),
+                                         ('robert.mraz@ui42.com');
+
 -- Approvers: configurable pool of individuals or groups that users pick from when creating requests.
 -- For groups, group_emails stores a JSON array of member emails; any one member can approve.
 CREATE TABLE IF NOT EXISTS approvers (
